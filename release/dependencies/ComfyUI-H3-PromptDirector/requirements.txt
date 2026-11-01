@@ -1,0 +1,7 @@
+numpy
+Pillow
+requests
+aiohttp
+onnxruntime
+kaldi-native-fbank
+PyYAML

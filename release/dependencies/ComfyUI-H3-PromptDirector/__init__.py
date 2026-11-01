@@ -1,0 +1,89 @@
+"""Local, sequential H3 prompt planning and video workflows."""
+from .prompt_nodes import PROMPT_NODE_CLASS_MAPPINGS, PROMPT_NODE_DISPLAY_NAME_MAPPINGS
+from .shot_nodes import SHOT_NODE_CLASS_MAPPINGS, SHOT_NODE_DISPLAY_NAME_MAPPINGS
+from .planner import PLANNER_NODE_CLASS_MAPPINGS, PLANNER_NODE_DISPLAY_NAME_MAPPINGS
+from .render_nodes import RENDER_NODE_CLASS_MAPPINGS, RENDER_NODE_DISPLAY_NAME_MAPPINGS
+from .scene_inputs import SCENE_NODE_CLASS_MAPPINGS, SCENE_NODE_DISPLAY_NAME_MAPPINGS
+from .native_nodes import NATIVE_NODE_CLASS_MAPPINGS, NATIVE_NODE_DISPLAY_NAME_MAPPINGS
+from .studio_nodes import STUDIO_NODE_CLASS_MAPPINGS, STUDIO_NODE_DISPLAY_NAME_MAPPINGS, clear_bundle_cache
+from .resource_control import register_cleaner, register_routes
+from .config_nodes import CONFIG_NODE_CLASS_MAPPINGS, CONFIG_NODE_DISPLAY_NAME_MAPPINGS
+from .prompt_presets import PRESET_NODE_CLASS_MAPPINGS, PRESET_NODE_DISPLAY_NAME_MAPPINGS
+from .voice_nodes import VOICE_NODE_CLASS_MAPPINGS, VOICE_NODE_DISPLAY_NAME_MAPPINGS, register_voice_routes
+from .manual_image_nodes import MANUAL_IMAGE_NODE_CLASS_MAPPINGS, MANUAL_IMAGE_NODE_DISPLAY_NAME_MAPPINGS, register_manual_image_routes
+from .dialogue_audio import DIALOGUE_NODE_CLASS_MAPPINGS, DIALOGUE_NODE_DISPLAY_NAME_MAPPINGS
+from .audio_timeline import register_audio_timeline_routes
+from .dialogue_tts import register_dialogue_tts_routes
+from .image_tools import NODE_CLASS_MAPPINGS as IMAGE_TOOLS, NODE_DISPLAY_NAME_MAPPINGS as IMAGE_TOOL_NAMES
+from .description_cache import register_epoch_normalizer
+from .subtitle_nodes import NODE_CLASS_MAPPINGS as SUBTITLES, NODE_DISPLAY_NAME_MAPPINGS as SUBTITLE_NAMES
+from .subtitle_nodes import register_subtitle_routes
+from .manual_plan import NODE_CLASS_MAPPINGS as MANUAL_PLANS, NODE_DISPLAY_NAME_MAPPINGS as MANUAL_PLAN_NAMES
+from .plan_files import register_plan_file_routes
+from .reference_tools import NODE_CLASS_MAPPINGS as REFERENCE_TOOLS, NODE_DISPLAY_NAME_MAPPINGS as REFERENCE_TOOL_NAMES
+from .prompt_optimize import NODE_CLASS_MAPPINGS as PROMPT_TOOLS, NODE_DISPLAY_NAME_MAPPINGS as PROMPT_TOOL_NAMES
+from .qwen_studio import NODE_CLASS_MAPPINGS as QWEN_STUDIO, NODE_DISPLAY_NAME_MAPPINGS as QWEN_STUDIO_NAMES
+from .qwen_studio_panels import NODE_CLASS_MAPPINGS as QWEN_PANELS, NODE_DISPLAY_NAME_MAPPINGS as QWEN_PANEL_NAMES
+from .result_actions import register_result_routes
+from .speech_input import NODE_CLASS_MAPPINGS as SPEECH_INPUTS, NODE_DISPLAY_NAME_MAPPINGS as SPEECH_INPUT_NAMES, register_speech_routes
+
+WEB_DIRECTORY = "./web"
+register_cleaner(clear_bundle_cache)
+register_routes()
+register_voice_routes()
+register_manual_image_routes()
+register_audio_timeline_routes()
+register_dialogue_tts_routes()
+register_subtitle_routes()
+register_plan_file_routes()
+register_result_routes()
+register_speech_routes()
+register_epoch_normalizer()
+
+NODE_CLASS_MAPPINGS = {**PROMPT_NODE_CLASS_MAPPINGS, **SHOT_NODE_CLASS_MAPPINGS,
+                       **PLANNER_NODE_CLASS_MAPPINGS, **RENDER_NODE_CLASS_MAPPINGS,
+                       **SCENE_NODE_CLASS_MAPPINGS, **NATIVE_NODE_CLASS_MAPPINGS,
+                       **STUDIO_NODE_CLASS_MAPPINGS, **CONFIG_NODE_CLASS_MAPPINGS, **PRESET_NODE_CLASS_MAPPINGS,
+                       **VOICE_NODE_CLASS_MAPPINGS, **MANUAL_IMAGE_NODE_CLASS_MAPPINGS, **DIALOGUE_NODE_CLASS_MAPPINGS}
+NODE_DISPLAY_NAME_MAPPINGS = {
+    **PROMPT_NODE_DISPLAY_NAME_MAPPINGS, **SHOT_NODE_DISPLAY_NAME_MAPPINGS,
+    **PLANNER_NODE_DISPLAY_NAME_MAPPINGS, **RENDER_NODE_DISPLAY_NAME_MAPPINGS,
+    **SCENE_NODE_DISPLAY_NAME_MAPPINGS,
+    **NATIVE_NODE_DISPLAY_NAME_MAPPINGS,
+    **STUDIO_NODE_DISPLAY_NAME_MAPPINGS,
+    **CONFIG_NODE_DISPLAY_NAME_MAPPINGS,
+    **PRESET_NODE_DISPLAY_NAME_MAPPINGS,
+    **VOICE_NODE_DISPLAY_NAME_MAPPINGS,
+    **MANUAL_IMAGE_NODE_DISPLAY_NAME_MAPPINGS,
+    **DIALOGUE_NODE_DISPLAY_NAME_MAPPINGS,
+}
+NODE_CLASS_MAPPINGS.update(IMAGE_TOOLS)
+NODE_DISPLAY_NAME_MAPPINGS.update(IMAGE_TOOL_NAMES)
+NODE_CLASS_MAPPINGS.update(SUBTITLES)
+NODE_DISPLAY_NAME_MAPPINGS.update(SUBTITLE_NAMES)
+NODE_CLASS_MAPPINGS.update(MANUAL_PLANS)
+NODE_DISPLAY_NAME_MAPPINGS.update(MANUAL_PLAN_NAMES)
+NODE_CLASS_MAPPINGS.update(REFERENCE_TOOLS)
+NODE_DISPLAY_NAME_MAPPINGS.update(REFERENCE_TOOL_NAMES)
+NODE_CLASS_MAPPINGS.update(PROMPT_TOOLS)
+NODE_DISPLAY_NAME_MAPPINGS.update(PROMPT_TOOL_NAMES)
+NODE_CLASS_MAPPINGS.update(QWEN_STUDIO)
+NODE_DISPLAY_NAME_MAPPINGS.update(QWEN_STUDIO_NAMES)
+NODE_CLASS_MAPPINGS.update(QWEN_PANELS)
+NODE_DISPLAY_NAME_MAPPINGS.update(QWEN_PANEL_NAMES)
+NODE_CLASS_MAPPINGS.update(SPEECH_INPUTS)
+NODE_DISPLAY_NAME_MAPPINGS.update(SPEECH_INPUT_NAMES)
+
+# Shared branding and opt-in release support.
+from .portable_loaders import NODE_CLASS_MAPPINGS as _PORTABLE, NODE_DISPLAY_NAME_MAPPINGS as _PORTABLE_NAMES
+NODE_CLASS_MAPPINGS.update(_PORTABLE)
+NODE_DISPLAY_NAME_MAPPINGS.update(_PORTABLE_NAMES)
+from .bbaigc_updates import register_update_routes
+register_update_routes()
+__version__ = "1.2.25"
+for _class in NODE_CLASS_MAPPINGS.values():
+    _class.CATEGORY = "BBAIGC/" + str(getattr(_class, "CATEGORY", "工作台")).split("/", 1)[-1]
+
+from .optional_lora import NODE_CLASS_MAPPINGS as _OPTIONAL_LORA, NODE_DISPLAY_NAME_MAPPINGS as _OPTIONAL_LORA_NAMES
+NODE_CLASS_MAPPINGS.update(_OPTIONAL_LORA)
+NODE_DISPLAY_NAME_MAPPINGS.update(_OPTIONAL_LORA_NAMES)

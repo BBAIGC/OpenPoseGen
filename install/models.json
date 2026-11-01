@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "verified_on": "2026-11-01",
+  "presets": {
+    "qwen": [
+      "qwen-main",
+      "qwen-encoder",
+      "qwen-vae"
+    ],
+    "qwen-turbo": [
+      "qwen-turbo-main",
+      "qwen-encoder",
+      "qwen-vae"
+    ],
+    "moss": [
+      "moss-jib",
+      "moss-encoder",
+      "moss-vae"
+    ],
+    "moss-official": [
+      "moss-official",
+      "moss-encoder",
+      "moss-vae"
+    ],
+    "speech": [
+      "speech-model.onnx",
+      "speech-config.yaml",
+      "speech-tokens.json",
+      "speech-am.mvn"
+    ]
+  },
+  "files": {
+    "qwen-main": {
+      "repository": "KasugaiSakura/Qwen-Image-2.1-Uncensored-Abenzerps-GGUF",
+      "file": "qwen-image-2.1-UC-Q6_K.gguf",
+      "destination": "diffusion_models/qwen-image-2.1-UC-Q6_K.gguf",
+      "bytes": 5876556576,
+      "sha256": "e14bb312109333b3d73b92ad9b9ac8b29b51f2edca1e7b86d1af1981bf1c4ee3",
+      "url": "https://huggingface.co/KasugaiSakura/Qwen-Image-2.1-Uncensored-Abenzerps-GGUF/resolve/main/qwen-image-2.1-UC-Q6_K.gguf",
+      "source_page": "https://huggingface.co/KasugaiSakura/Qwen-Image-2.1-Uncensored-Abenzerps-GGUF/blob/main/qwen-image-2.1-UC-Q6_K.gguf"
+    },
+    "qwen-turbo-main": {
+      "repository": "Comfy-Org/Qwen-Image-2.1",
+      "file": "diffusion_models/qwen_image_2.1_turbo_int8_convrot.safetensors",
+      "destination": "diffusion_models/qwen_image_2.1_turbo_int8_convrot.safetensors",
+      "bytes": 7256787829,
+      "sha256": "8144a0182964aa8403ad6dbc011db837304167d235161b9aabaa8532e967314c",
+      "url": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/diffusion_models/qwen_image_2.1_turbo_int8_convrot.safetensors",
+      "source_page": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/blob/main/diffusion_models/qwen_image_2.1_turbo_int8_convrot.safetensors"
+    },
+    "qwen-encoder": {
+      "repository": "Comfy-Org/Qwen-Image-2.1",
+      "file": "text_encoders/qwen3vl_8b_int8_convrot.safetensors",
+      "destination": "text_encoders/qwen3vl_8b_int8_convrot.safetensors",
+      "bytes": 9350798360,
+      "sha256": "8bfd0f6e12abf2d2d697ecc888e5e90b0d6741d6708f05799f53afa560452e8f",
+      "url": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/text_encoders/qwen3vl_8b_int8_convrot.safetensors",
+      "source_page": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/blob/main/text_encoders/qwen3vl_8b_int8_convrot.safetensors"
+    },
+    "qwen-vae": {
+      "repository": "Comfy-Org/Qwen-Image-2.1",
+      "file": "vae/qwen_image_2.1_vae_bf16.safetensors",
+      "destination": "vae/qwen_image_2.1_vae_bf16.safetensors",
+      "bytes": 675509688,
+      "sha256": "bb21f7473051e1ac368515dd3f2e15cd44d7a11748ee8823e1ddca3e4876b7c9",
+      "url": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/resolve/main/vae/qwen_image_2.1_vae_bf16.safetensors",
+      "source_page": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1/blob/main/vae/qwen_image_2.1_vae_bf16.safetensors"
+    },
+    "moss-jib": {
+      "repository": "Jib Mix MOSS Realistic V2",
+      "file": "jibMixMossRealistic_v2RealityRenew.safetensors",
+      "destination": "diffusion_models/jibMixMossRealistic_v2RealityRenew.safetensors",
+      "bytes": 5414035750,
+      "sha256": "4b504c9bf2f2dde23840e7caa8354d66ff6453c122ec0c37b54f46e7e170c198",
+      "url": "https://civitai.com/api/download/models/3435334?fileId=3332190",
+      "source_page": "https://civitai.com/models/3016339/jib-mix-moss-realistic?modelVersionId=3435334"
+    },
+    "moss-official": {
+      "repository": "Comfy-Org/MOSS-Image",
+      "file": "diffusion_models/moss_image_sft_bf16.safetensors",
+      "destination": "diffusion_models/moss_image_sft_bf16.safetensors",
+      "bytes": 10164655808,
+      "sha256": "f96738d8116d78b7316b57c663d8c98591ddafab7488f48e3099b7655e34ab6f",
+      "url": "https://huggingface.co/Comfy-Org/MOSS-Image/resolve/main/diffusion_models/moss_image_sft_bf16.safetensors",
+      "source_page": "https://huggingface.co/Comfy-Org/MOSS-Image/blob/main/diffusion_models/moss_image_sft_bf16.safetensors"
+    },
+    "moss-encoder": {
+      "repository": "Comfy-Org/MOSS-Image",
+      "file": "text_encoders/qwen3.5_9b_bf16.safetensors",
+      "destination": "text_encoders/qwen3.5_9b_bf16.safetensors",
+      "bytes": 19306312328,
+      "sha256": "7e6e9f08d598f829cb940e60ac0c698e1f1c27a47daffd7e598cd78c78b4cc53",
+      "url": "https://huggingface.co/Comfy-Org/MOSS-Image/resolve/main/text_encoders/qwen3.5_9b_bf16.safetensors",
+      "source_page": "https://huggingface.co/Comfy-Org/MOSS-Image/blob/main/text_encoders/qwen3.5_9b_bf16.safetensors"
+    },
+    "moss-vae": {
+      "repository": "Comfy-Org/MOSS-Image",
+      "file": "vae/flux2-vae_small.safetensors",
+      "destination": "vae/flux2-vae_small.safetensors",
+      "bytes": 249521340,
+      "sha256": "d8d52ba036475f5fb07c8b435e176d3d97ebfa82f0d1a1c317f9cc1e25bd013b",
+      "url": "https://huggingface.co/Comfy-Org/MOSS-Image/resolve/main/vae/flux2-vae_small.safetensors",
+      "source_page": "https://huggingface.co/Comfy-Org/MOSS-Image/blob/main/vae/flux2-vae_small.safetensors"
+    },
+    "speech-model.onnx": {
+      "repository": "kautism/SenseVoiceSmall-onnx",
+      "file": "model.onnx",
+      "destination": "sensevoice-small/model.onnx",
+      "bytes": 940009685,
+      "sha256": "546d2cb30d56177041f0f8a4e669da58f92b2990506513bac4341a3bae99c256",
+      "url": "https://huggingface.co/kautism/SenseVoiceSmall-onnx/resolve/main/model.onnx",
+      "source_page": "https://huggingface.co/kautism/SenseVoiceSmall-onnx/blob/main/model.onnx"
+    },
+    "speech-config.yaml": {
+      "repository": "kautism/SenseVoiceSmall-onnx",
+      "file": "config.yaml",
+      "destination": "sensevoice-small/config.yaml",
+      "bytes": 1855,
+      "sha256": "f71e239ba36705564b5bf2d2ffd07eece07b8e3f2bbf6d2c99d8df856339ac19",
+      "url": "https://huggingface.co/kautism/SenseVoiceSmall-onnx/resolve/main/config.yaml",
+      "source_page": "https://huggingface.co/kautism/SenseVoiceSmall-onnx/blob/main/config.yaml"
+    },
+    "speech-tokens.json": {
+      "repository": "kautism/SenseVoiceSmall-onnx",
+      "file": "tokens.json",
+      "destination": "sensevoice-small/tokens.json",
+      "bytes": 352064,
+      "sha256": "a2594fc1474e78973149cba8cd1f603ebed8c39c7decb470631f66e70ce58e97",
+      "url": "https://huggingface.co/kautism/SenseVoiceSmall-onnx/resolve/main/tokens.json",
+      "source_page": "https://huggingface.co/kautism/SenseVoiceSmall-onnx/blob/main/tokens.json"
+    },
+    "speech-am.mvn": {
+      "repository": "kautism/SenseVoiceSmall-onnx",
+      "file": "am.mvn",
+      "destination": "sensevoice-small/am.mvn",
+      "bytes": 11203,
+      "sha256": "29b3c740a2c0cfc6b308126d31d7f265fa2be74f3bb095cd2f143ea970896ae5",
+      "url": "https://huggingface.co/kautism/SenseVoiceSmall-onnx/resolve/main/am.mvn",
+      "source_page": "https://huggingface.co/kautism/SenseVoiceSmall-onnx/blob/main/am.mvn"
+    }
+  }
+}

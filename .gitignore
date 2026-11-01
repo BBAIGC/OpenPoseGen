@@ -1,0 +1,11 @@
+runtime.json
+settings.json
+provider.json
+jobs.json
+__pycache__/
+*.pyc
+*.log
+.venv/
+node_modules/
+.external-sessions/
+.asset-cache/

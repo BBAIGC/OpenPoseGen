@@ -1,0 +1,1430 @@
+{
+  "UnetLoaderGGUF": {
+    "input": {
+      "required": {
+        "unet_name": [
+          [
+            ""
+          ]
+        ]
+      }
+    },
+    "output": [
+      "MODEL"
+    ],
+    "output_name": [
+      "MODEL"
+    ]
+  },
+  "CodexQwenStudioEncoder": {
+    "input": {
+      "required": {
+        "clip": [
+          "CLIP"
+        ],
+        "vae": [
+          "VAE"
+        ],
+        "prompt": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "negative_prompt": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "resolution": [
+          "INT",
+          {
+            "default": 1024,
+            "min": 0,
+            "max": 4096,
+            "step": 32
+          }
+        ],
+        "生成模式": [
+          "STRING",
+          {
+            "default": "文生图",
+            "forceInput": true
+          }
+        ]
+      },
+      "optional": {
+        "参考图集": [
+          "CODEX_REFERENCES",
+          {
+            "lazy": true
+          }
+        ]
+      }
+    },
+    "output": [
+      "CONDITIONING",
+      "CONDITIONING",
+      "LATENT"
+    ],
+    "output_name": [
+      "正面条件",
+      "负面条件",
+      "参考尺寸空潜空间"
+    ]
+  },
+  "CodexQwenCanvasLatent": {
+    "input": {
+      "required": {
+        "width": [
+          "INT",
+          {
+            "default": 1024,
+            "min": 64,
+            "max": 4096,
+            "step": 32
+          }
+        ],
+        "height": [
+          "INT",
+          {
+            "default": 1024,
+            "min": 64,
+            "max": 4096,
+            "step": 32
+          }
+        ],
+        "batch_size": [
+          "INT",
+          {
+            "default": 1,
+            "min": 1,
+            "max": 16
+          }
+        ]
+      }
+    },
+    "output": [
+      "LATENT"
+    ],
+    "output_name": [
+      "LATENT"
+    ]
+  },
+  "CLIPLoader": {
+    "input": {
+      "required": {
+        "clip_name": [
+          [
+            ""
+          ]
+        ],
+        "type": [
+          [
+            "qwen_image",
+            "moss_image"
+          ]
+        ]
+      },
+      "optional": {
+        "device": [
+          [
+            "default",
+            "cpu"
+          ],
+          {
+            "advanced": true
+          }
+        ]
+      }
+    },
+    "output": [
+      "CLIP"
+    ],
+    "output_name": [
+      "CLIP"
+    ]
+  },
+  "VAELoader": {
+    "input": {
+      "required": {
+        "vae_name": [
+          [
+            ""
+          ]
+        ]
+      }
+    },
+    "output": [
+      "VAE"
+    ],
+    "output_name": [
+      "VAE"
+    ]
+  },
+  "KSampler": {
+    "input": {
+      "required": {
+        "model": [
+          "MODEL",
+          {
+            "tooltip": "The model used for denoising the input latent."
+          }
+        ],
+        "seed": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 18446744073709551615,
+            "control_after_generate": true,
+            "tooltip": "The random seed used for creating the noise."
+          }
+        ],
+        "steps": [
+          "INT",
+          {
+            "default": 20,
+            "min": 1,
+            "max": 10000,
+            "tooltip": "The number of steps used in the denoising process."
+          }
+        ],
+        "cfg": [
+          "FLOAT",
+          {
+            "default": 8.0,
+            "min": 0.0,
+            "max": 100.0,
+            "step": 0.1,
+            "round": 0.01,
+            "tooltip": "The Classifier-Free Guidance scale balances creativity and adherence to the prompt. Higher values result in images more closely matching the prompt however too high values will negatively impact quality."
+          }
+        ],
+        "sampler_name": [
+          [
+            "euler",
+            "er_sde"
+          ],
+          {
+            "tooltip": "The algorithm used when sampling, this can affect the quality, speed, and style of the generated output."
+          }
+        ],
+        "scheduler": [
+          [
+            "simple",
+            "sgm_uniform",
+            "bong_tangent"
+          ],
+          {
+            "tooltip": "The scheduler controls how noise is gradually removed to form the image."
+          }
+        ],
+        "positive": [
+          "CONDITIONING",
+          {
+            "tooltip": "The conditioning describing the attributes you want to include in the image."
+          }
+        ],
+        "negative": [
+          "CONDITIONING",
+          {
+            "tooltip": "The conditioning describing the attributes you want to exclude from the image."
+          }
+        ],
+        "latent_image": [
+          "LATENT",
+          {
+            "tooltip": "The latent image to denoise."
+          }
+        ],
+        "denoise": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.01,
+            "tooltip": "The amount of denoising applied, lower values will maintain the structure of the initial image allowing for image to image sampling."
+          }
+        ]
+      }
+    },
+    "output": [
+      "LATENT"
+    ],
+    "output_name": [
+      "LATENT"
+    ]
+  },
+  "ModelSamplingAuraFlow": {
+    "input": {
+      "required": {
+        "model": [
+          "MODEL"
+        ],
+        "shift": [
+          "FLOAT",
+          {
+            "default": 1.73,
+            "min": 0.0,
+            "max": 100.0,
+            "step": 0.01
+          }
+        ]
+      },
+      "optional": {
+        "sampling": [
+          [
+            "flow",
+            "img_to_img_velocity"
+          ],
+          {
+            "default": "flow",
+            "advanced": true
+          }
+        ]
+      }
+    },
+    "output": [
+      "MODEL"
+    ],
+    "output_name": [
+      "MODEL"
+    ]
+  },
+  "CLIPTextEncode": {
+    "input": {
+      "required": {
+        "text": [
+          "STRING",
+          {
+            "multiline": true,
+            "dynamicPrompts": true,
+            "tooltip": "The text to be encoded."
+          }
+        ],
+        "clip": [
+          "CLIP",
+          {
+            "tooltip": "The CLIP model used for encoding the text."
+          }
+        ]
+      }
+    },
+    "output": [
+      "CONDITIONING"
+    ],
+    "output_name": [
+      "CONDITIONING"
+    ]
+  },
+  "EmptyFlux2LatentImage": {
+    "input": {
+      "required": {
+        "width": [
+          "INT",
+          {
+            "default": 1024,
+            "min": 16,
+            "max": 16384,
+            "step": 16
+          }
+        ],
+        "height": [
+          "INT",
+          {
+            "default": 1024,
+            "min": 16,
+            "max": 16384,
+            "step": 16
+          }
+        ],
+        "batch_size": [
+          "INT",
+          {
+            "default": 1,
+            "min": 1,
+            "max": 4096
+          }
+        ]
+      }
+    },
+    "output": [
+      "LATENT"
+    ],
+    "output_name": [
+      "LATENT"
+    ]
+  },
+  "VAEEncode": {
+    "input": {
+      "required": {
+        "pixels": [
+          "IMAGE"
+        ],
+        "vae": [
+          "VAE"
+        ]
+      }
+    },
+    "output": [
+      "LATENT"
+    ],
+    "output_name": [
+      "LATENT"
+    ]
+  },
+  "VAEDecode": {
+    "input": {
+      "required": {
+        "samples": [
+          "LATENT",
+          {
+            "tooltip": "The latent to be decoded."
+          }
+        ],
+        "vae": [
+          "VAE",
+          {
+            "tooltip": "The VAE model used for decoding the latent."
+          }
+        ]
+      }
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "IMAGE"
+    ]
+  },
+  "ImageScale": {
+    "input": {
+      "required": {
+        "image": [
+          "IMAGE"
+        ],
+        "upscale_method": [
+          [
+            "nearest-exact",
+            "bilinear",
+            "area",
+            "bicubic",
+            "lanczos"
+          ]
+        ],
+        "width": [
+          "INT",
+          {
+            "default": 512,
+            "min": 0,
+            "max": 16384,
+            "step": 1
+          }
+        ],
+        "height": [
+          "INT",
+          {
+            "default": 512,
+            "min": 0,
+            "max": 16384,
+            "step": 1
+          }
+        ],
+        "crop": [
+          [
+            "disabled",
+            "center"
+          ]
+        ]
+      }
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "IMAGE"
+    ]
+  },
+  "SaveImage": {
+    "input": {
+      "required": {
+        "images": [
+          "IMAGE",
+          {
+            "tooltip": "The images to save."
+          }
+        ],
+        "filename_prefix": [
+          "STRING",
+          {
+            "default": "ComfyUI",
+            "tooltip": "The prefix for the file to save. This may include formatting information such as %date:yyyy-MM-dd% or %Empty Latent Image.width% to include values from nodes."
+          }
+        ]
+      },
+      "hidden": {
+        "prompt": "PROMPT",
+        "extra_pnginfo": "EXTRA_PNGINFO"
+      }
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "images"
+    ]
+  },
+  "UNETLoader": {
+    "input": {
+      "required": {
+        "unet_name": [
+          [
+            ""
+          ]
+        ],
+        "weight_dtype": [
+          [
+            "default",
+            "fp8_e4m3fn",
+            "fp8_e4m3fn_fast",
+            "fp8_e5m2"
+          ],
+          {
+            "advanced": true
+          }
+        ]
+      }
+    },
+    "output": [
+      "MODEL"
+    ],
+    "output_name": [
+      "MODEL"
+    ]
+  },
+  "LoadImage": {
+    "input": {
+      "required": {
+        "image": [
+          [
+            ""
+          ],
+          {
+            "image_upload": true
+          }
+        ]
+      }
+    },
+    "output": [
+      "IMAGE",
+      "MASK"
+    ],
+    "output_name": [
+      "IMAGE",
+      "MASK"
+    ]
+  },
+  "CodexReferenceInputs": {
+    "input": {
+      "required": {
+        "启用参考图数量": [
+          "INT",
+          {
+            "default": 1,
+            "min": 0,
+            "max": 16
+          }
+        ]
+      },
+      "optional": {
+        "参考图1": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图2": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图3": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图4": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图5": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图6": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图7": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图8": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图9": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图10": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图11": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图12": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图13": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图14": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图15": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图16": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "对比参考图编号": [
+          "INT",
+          {
+            "default": 1,
+            "min": 1,
+            "max": 16
+          }
+        ]
+      }
+    },
+    "output": [
+      "CODEX_REFERENCES",
+      "IMAGE"
+    ],
+    "output_name": [
+      "参考图集合",
+      "所选参考图"
+    ]
+  },
+  "PrimitiveStringMultiline": {
+    "input": {
+      "required": {
+        "value": [
+          "STRING",
+          {
+            "multiline": true
+          }
+        ]
+      }
+    },
+    "output": [
+      "STRING"
+    ],
+    "output_name": [
+      "STRING"
+    ]
+  },
+  "TextEncodeQwenImage21": {
+    "input": {},
+    "output": []
+  },
+  "PreviewImage": {
+    "input": {
+      "required": {
+        "images": [
+          "IMAGE"
+        ]
+      },
+      "hidden": {
+        "prompt": "PROMPT",
+        "extra_pnginfo": "EXTRA_PNGINFO"
+      }
+    },
+    "output": [],
+    "output_name": []
+  },
+  "QwenImage21Cache": {
+    "input": {
+      "required": {
+        "model": [
+          "MODEL",
+          {
+            "display_name": "模型"
+          }
+        ],
+        "device": [
+          "COMBO",
+          {
+            "display_name": "缓存位置",
+            "tooltip": "auto 优先使用空闲显存，其次使用内存；cpu 使用内存；off 关闭缓存，每步重新计算。",
+            "default": "auto",
+            "multiselect": false,
+            "options": [
+              "auto",
+              "gpu",
+              "cpu",
+              "off"
+            ]
+          }
+        ],
+        "dtype": [
+          "COMBO",
+          {
+            "display_name": "缓存精度",
+            "tooltip": "default 无损；int8 约占一半空间；int4 约占四分之一空间，但误差更大。",
+            "default": "default",
+            "multiselect": false,
+            "options": [
+              "default",
+              "int8",
+              "int4"
+            ]
+          }
+        ]
+      }
+    },
+    "output": [
+      "MODEL"
+    ],
+    "output_name": [
+      "模型"
+    ]
+  },
+  "SamplerCustomAdvanced": {
+    "input": {
+      "required": {
+        "noise": [
+          "NOISE",
+          {}
+        ],
+        "guider": [
+          "GUIDER",
+          {}
+        ],
+        "sampler": [
+          "SAMPLER",
+          {}
+        ],
+        "sigmas": [
+          "SIGMAS",
+          {}
+        ],
+        "latent_image": [
+          "LATENT",
+          {}
+        ]
+      }
+    },
+    "output": [
+      "LATENT",
+      "LATENT"
+    ],
+    "output_name": [
+      "output",
+      "denoised_output"
+    ]
+  },
+  "RandomNoise": {
+    "input": {
+      "required": {
+        "noise_seed": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 18446744073709551615,
+            "control_after_generate": true
+          }
+        ]
+      }
+    },
+    "output": [
+      "NOISE"
+    ],
+    "output_name": [
+      "NOISE"
+    ]
+  },
+  "CFGGuider": {
+    "input": {
+      "required": {
+        "model": [
+          "MODEL",
+          {}
+        ],
+        "positive": [
+          "CONDITIONING",
+          {}
+        ],
+        "negative": [
+          "CONDITIONING",
+          {}
+        ],
+        "cfg": [
+          "FLOAT",
+          {
+            "default": 8.0,
+            "min": 0.0,
+            "max": 100.0,
+            "step": 0.1,
+            "round": 0.01
+          }
+        ]
+      }
+    },
+    "output": [
+      "GUIDER"
+    ],
+    "output_name": [
+      "GUIDER"
+    ]
+  },
+  "KSamplerSelect": {
+    "input": {
+      "required": {
+        "sampler_name": [
+          "COMBO",
+          {
+            "multiselect": false,
+            "options": [
+              "euler",
+              "euler_cfg_pp",
+              "euler_ancestral",
+              "euler_ancestral_cfg_pp",
+              "heun",
+              "heunpp2",
+              "exp_heun_2_x0",
+              "exp_heun_2_x0_sde",
+              "dpm_2",
+              "dpm_2_ancestral",
+              "lms",
+              "dpm_fast",
+              "dpm_adaptive",
+              "dpmpp_2s_ancestral",
+              "dpmpp_2s_ancestral_cfg_pp",
+              "dpmpp_sde",
+              "dpmpp_sde_gpu",
+              "dpmpp_2m",
+              "dpmpp_2m_cfg_pp",
+              "dpmpp_2m_sde",
+              "dpmpp_2m_sde_gpu",
+              "dpmpp_2m_sde_heun",
+              "dpmpp_2m_sde_heun_gpu",
+              "dpmpp_3m_sde",
+              "dpmpp_3m_sde_gpu",
+              "ddpm",
+              "lcm",
+              "ipndm",
+              "ipndm_v",
+              "deis",
+              "cfgpp_ud10_ab",
+              "res_multistep",
+              "res_multistep_cfg_pp",
+              "res_multistep_ancestral",
+              "res_multistep_ancestral_cfg_pp",
+              "gradient_estimation",
+              "gradient_estimation_cfg_pp",
+              "er_sde",
+              "seeds_2",
+              "seeds_3",
+              "sa_solver",
+              "sa_solver_pece",
+              "ddim",
+              "uni_pc",
+              "uni_pc_bh2"
+            ]
+          }
+        ]
+      }
+    },
+    "output": [
+      "SAMPLER"
+    ],
+    "output_name": [
+      "SAMPLER"
+    ]
+  },
+  "ManualSigmas": {
+    "input": {
+      "required": {
+        "sigmas": [
+          "STRING",
+          {
+            "default": "1, 0.5",
+            "multiline": false
+          }
+        ]
+      }
+    },
+    "output": [
+      "SIGMAS"
+    ],
+    "output_name": [
+      "SIGMAS"
+    ]
+  },
+  "CodexQwenReferenceEncoder": {
+    "input": {
+      "required": {
+        "clip": [
+          "CLIP"
+        ],
+        "vae": [
+          "VAE"
+        ],
+        "prompt": [
+          "STRING",
+          {
+            "multiline": true
+          }
+        ],
+        "negative_prompt": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "resolution": [
+          "INT",
+          {
+            "default": 1024,
+            "min": 0,
+            "max": 4096,
+            "step": 32
+          }
+        ]
+      },
+      "optional": {
+        "参考图集": [
+          "CODEX_REFERENCES"
+        ]
+      }
+    },
+    "output": [
+      "CONDITIONING",
+      "CONDITIONING",
+      "LATENT"
+    ],
+    "output_name": [
+      "正面条件",
+      "负面条件",
+      "原图尺寸潜空间"
+    ]
+  },
+  "BBAPIConnection": {
+    "input": {
+      "required": {
+        "配置名称": [
+          "STRING",
+          {
+            "default": "bbapi-main",
+            "multiline": false
+          }
+        ],
+        "接口地址": [
+          "STRING",
+          {
+            "default": "https://bbapi.ainivox.cn",
+            "multiline": false
+          }
+        ],
+        "默认模型": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": false,
+            "tooltip": "填写该密钥分组开放的模型；生成节点留空时使用此模型。"
+          }
+        ],
+        "超时秒": [
+          "INT",
+          {
+            "default": 300,
+            "min": 30,
+            "max": 900,
+            "step": 10,
+            "advanced": true
+          }
+        ]
+      }
+    },
+    "output": [
+      "BBAPI_CONNECTION",
+      "STRING"
+    ],
+    "output_name": [
+      "连接",
+      "状态"
+    ]
+  },
+  "BBAPIReferenceInputs": {
+    "input": {
+      "required": {
+        "参考图数量": [
+          "INT",
+          {
+            "default": 1,
+            "min": 1,
+            "max": 16
+          }
+        ]
+      },
+      "optional": {
+        "参考图1": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图2": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图3": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图4": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图5": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图6": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图7": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图8": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图9": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图10": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图11": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图12": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图13": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图14": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图15": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ],
+        "参考图16": [
+          "IMAGE",
+          {
+            "lazy": true
+          }
+        ]
+      }
+    },
+    "output": [
+      "BBAPI_REFERENCES",
+      "IMAGE"
+    ],
+    "output_name": [
+      "参考图集合",
+      "参考图逐张"
+    ]
+  },
+  "BBAPIMultiReference": {
+    "input": {
+      "required": {
+        "连接": [
+          "BBAPI_CONNECTION"
+        ],
+        "模型": [
+          "STRING",
+          {
+            "default": "自动（2.5优先）",
+            "multiline": false,
+            "tooltip": "留空使用连接节点的默认模型，也可填写该密钥允许的其他模型。"
+          }
+        ],
+        "提示词": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "分辨率": [
+          [
+            "1K",
+            "2K",
+            "4K"
+          ]
+        ],
+        "比例": [
+          [
+            "1:1",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "1:1（方形）",
+            "3:2（横）",
+            "2:3（竖）",
+            "4:3（横）",
+            "3:4（竖）",
+            "16:9（横）",
+            "9:16（竖）",
+            "跟随参考图1",
+            "跟随参考图2",
+            "跟随参考图3",
+            "跟随参考图4",
+            "跟随参考图5",
+            "跟随参考图6",
+            "跟随参考图7",
+            "跟随参考图8",
+            "跟随参考图9",
+            "跟随参考图10",
+            "跟随参考图11",
+            "跟随参考图12",
+            "跟随参考图13",
+            "跟随参考图14",
+            "跟随参考图15",
+            "跟随参考图16"
+          ]
+        ],
+        "批量数量": [
+          "INT",
+          {
+            "default": 1,
+            "min": 1,
+            "max": 16,
+            "step": 1
+          }
+        ],
+        "并发上限": [
+          "INT",
+          {
+            "default": 2,
+            "min": 1,
+            "max": 16,
+            "step": 1,
+            "tooltip": "最多16；首次建议1–2。站点或上游仍可能限制更低并发。"
+          }
+        ],
+        "质量": [
+          [
+            "省费",
+            "标准",
+            "精细",
+            "自动"
+          ],
+          {
+            "default": "省费",
+            "advanced": true
+          }
+        ],
+        "输出模式": [
+          [
+            "预览（不保存）",
+            "保存并预览"
+          ],
+          {
+            "default": "保存并预览"
+          }
+        ],
+        "重新生成编号": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 2147483647,
+            "advanced": true,
+            "tooltip": "相同输入复用已生成结果；要重新请求一组图片时递增此编号。"
+          }
+        ]
+      },
+      "optional": {
+        "参考图": [
+          "BBAPI_REFERENCES"
+        ],
+        "上游图片批次": [
+          "IMAGE",
+          {
+            "tooltip": "最多16张；上游的IMAGE批次也可直接作为参考图。"
+          }
+        ]
+      }
+    },
+    "output": [
+      "IMAGE",
+      "STRING",
+      "IMAGE",
+      "BBAPI_REFERENCES",
+      "IMAGE"
+    ],
+    "output_name": [
+      "全部生成图",
+      "报告",
+      "第一张生成图",
+      "生成图作参考",
+      "输入参考图"
+    ]
+  },
+  "BBAPIPromptToImage": {
+    "input": {
+      "required": {
+        "连接": [
+          "BBAPI_CONNECTION"
+        ],
+        "模型": [
+          "STRING",
+          {
+            "default": "自动（2.5优先）",
+            "multiline": false,
+            "tooltip": "留空使用连接节点的默认模型，也可填写该密钥允许的其他模型。"
+          }
+        ],
+        "提示词": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "分辨率": [
+          [
+            "1K",
+            "2K",
+            "4K"
+          ]
+        ],
+        "比例": [
+          [
+            "1:1",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "1:1（方形）",
+            "3:2（横）",
+            "2:3（竖）",
+            "4:3（横）",
+            "3:4（竖）",
+            "16:9（横）",
+            "9:16（竖）",
+            "跟随参考图1",
+            "跟随参考图2",
+            "跟随参考图3",
+            "跟随参考图4",
+            "跟随参考图5",
+            "跟随参考图6",
+            "跟随参考图7",
+            "跟随参考图8",
+            "跟随参考图9",
+            "跟随参考图10",
+            "跟随参考图11",
+            "跟随参考图12",
+            "跟随参考图13",
+            "跟随参考图14",
+            "跟随参考图15",
+            "跟随参考图16"
+          ]
+        ],
+        "批量数量": [
+          "INT",
+          {
+            "default": 1,
+            "min": 1,
+            "max": 16,
+            "step": 1
+          }
+        ],
+        "并发上限": [
+          "INT",
+          {
+            "default": 2,
+            "min": 1,
+            "max": 16,
+            "step": 1,
+            "tooltip": "最多16；首次建议1–2。站点或上游仍可能限制更低并发。"
+          }
+        ],
+        "质量": [
+          [
+            "省费",
+            "标准",
+            "精细",
+            "自动"
+          ],
+          {
+            "default": "省费",
+            "advanced": true
+          }
+        ],
+        "输出模式": [
+          [
+            "预览（不保存）",
+            "保存并预览"
+          ],
+          {
+            "default": "保存并预览"
+          }
+        ],
+        "重新生成编号": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 2147483647,
+            "advanced": true,
+            "tooltip": "相同输入复用已生成结果；要重新请求一组图片时递增此编号。"
+          }
+        ]
+      }
+    },
+    "output": [
+      "IMAGE",
+      "STRING",
+      "IMAGE",
+      "BBAPI_REFERENCES",
+      "IMAGE"
+    ],
+    "output_name": [
+      "全部生成图",
+      "报告",
+      "第一张生成图",
+      "生成图作参考",
+      "输入参考图"
+    ]
+  },
+  "LoraLoaderModelOnly": {
+    "input": {
+      "required": {
+        "model": [
+          "MODEL"
+        ],
+        "lora_name": [
+          [
+            ""
+          ]
+        ],
+        "strength_model": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "min": -100.0,
+            "max": 100.0,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    "output": [
+      "MODEL"
+    ],
+    "output_name": [
+      "MODEL"
+    ]
+  }
+}

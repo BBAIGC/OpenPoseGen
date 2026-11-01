@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>姿绘库 · OpenPoseGen</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-symbol" aria-hidden="true">◈</span><strong>姿绘库</strong><button id="collapse-nav" class="icon-button" title="收起分类" aria-label="收起分类">‹</button></div>
+      <nav id="category-nav" aria-label="素材分类"></nav>
+      <div class="sidebar-bottom"><button id="about-open" class="about-open"><span>OpenPoseGen</span><small id="about-version">v1.2.0</small><i id="update-dot" hidden></i></button><span id="source-state" class="sr-only">正在连接素材库</span><button id="refresh" class="icon-button" title="刷新素材" aria-label="刷新素材">↻</button></div>
+    </aside>
+    <main class="workspace">
+      <header class="toolbar">
+        <button id="expand-nav" class="icon-button" title="展开分类" aria-label="展开分类" hidden>☰</button>
+        <div class="location"><h1 id="page-title">形象</h1><span id="asset-count"></span></div>
+        <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><input id="search" type="search" placeholder="搜索素材、标签…" aria-label="搜索素材、标签"><kbd>/</kbd></label>
+        <div class="toolbar-actions">
+          <label class="size-control" title="缩略图大小"><span aria-hidden="true">▦</span><input id="thumbnail-size" type="range" min="120" max="240" step="10" value="170" aria-label="缩略图大小"></label>
+          <div class="view-switch" id="view-switch" role="group" aria-label="浏览模式"><span class="switch-track"></span><button id="view-grid" aria-pressed="true" title="分类浏览">分类</button><button id="view-combine" aria-pressed="false" title="参考搭配">搭配</button><button id="view-external" aria-pressed="false" title="外接参考">外接</button></div>
+          <button id="jobs-toggle" class="jobs-toggle" aria-label="生成任务" aria-expanded="false" title="生成任务"><svg viewBox="0 0 36 36" aria-hidden="true"><circle class="job-ring-track" cx="18" cy="18" r="14"/><circle class="job-ring-progress" cx="18" cy="18" r="14"/></svg><span id="jobs-ring-label">0</span><i id="jobs-active-count" hidden></i></button>
+          <button id="close-library" class="icon-button" title="返回画布" aria-label="返回画布">×</button>
+        </div>
+      </header>
+      <div id="error-banner" class="error-banner" role="status" hidden><span></span><button id="retry-load" class="button">重试</button></div>
+      <section class="browser-area" id="browser-area" aria-label="素材浏览">
+        <div id="grid-scroller" class="grid-scroller" tabindex="0"><div class="virtual-canvas"></div><div class="gallery-empty" hidden><strong>没有找到素材</strong><span>试试其他分类或搜索词</span></div></div>
+        <div id="combine-view" class="combine-view" hidden></div>
+      </section>
+      <section id="composer" class="composer" aria-label="快速生成" hidden>
+        <div class="composer-top">
+          <div class="composer-reference-area">
+            <div class="composer-heading"><strong>快速生成</strong></div>
+            <div id="references" class="references"><span class="references-empty">选择上方素材作为参考</span></div>
+            <div class="prompt-detail"><span>提示词细节</span><input id="detail-level" type="range" min="1" max="5" step="1" value="3" aria-label="提示词细节"><output id="detail-label">适中</output></div>
+          </div>
+          <div class="composer-results-slot"><section id="results-panel" class="results-panel"><header><button id="results-toggle" class="results-heading" aria-expanded="false" title="展开生成结果"><span id="results-chevron" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></span><strong>生成结果</strong><span id="results-count"></span></button><span id="results-state"></span></header><div id="results-scroll" class="results-scroll"></div></section></div>
+        </div>
+        <div class="prompt-wrap"><div id="prompt-editor" class="prompt-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="生成提示词" data-placeholder="描述画面，输入 @ 引用已选素材…" spellcheck="false"></div><div id="mention-menu" class="mention-menu" role="listbox" hidden></div><button id="speech-button" class="speech-button icon-button" title="语音输入" aria-label="语音输入"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M6 10v2a6 6 0 0 0 12 0v-2M12 18v4m-4 0h8"/></svg></button><div id="speech-live" class="speech-live" hidden><button id="speech-cancel" class="speech-cancel icon-button" aria-label="取消语音输入" title="取消语音输入"><svg viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></svg></button><div id="speech-wave" class="speech-wave" aria-hidden="true"></div><button id="speech-stop" class="speech-stop icon-button" aria-label="停止录音" title="停止录音，完成当前段识别"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1" fill="currentColor" stroke="none"/></svg></button></div></div>
+        <div class="composer-operation-row">
+          <div class="operation-scroll">
+            <button id="model-config-toggle" class="model-config-toggle button" aria-haspopup="true" aria-expanded="false"><span id="model-config-summary">千问 2.1</span><svg viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg></button>
+            <label><span class="sr-only">提示词预设</span><select id="preset"><option value="">选择预设</option></select></label>
+            <button id="generation-settings-toggle" class="generation-settings-toggle" aria-label="画面设置" aria-haspopup="true" aria-expanded="false"><span id="generation-settings-summary">3:4 · 2K · 1536×2048 · 自动背景</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></button>
+            <button id="edit-presets" class="icon-button" title="设置" aria-label="设置">⚙</button>
+            <button id="clear-selection" class="button muted">清空选择</button>
+          </div>
+          <button id="optimize-prompt" class="icon-button optimize-prompt" title="优化提示词" aria-label="优化提示词"><svg viewBox="0 0 24 24"><path d="m4 20 11-11 3 3L7 23zM14 3v4m-2-2h4M20 6v4m-2-2h4M6 6v4M4 8h4"/></svg></button><button id="optimize-cancel" class="icon-button" title="取消提示词优化" aria-label="取消提示词优化" hidden>×</button><button id="optimize-apply" class="button" hidden>应用优化</button><button id="generate" class="button primary"><span aria-hidden="true">↑</span> 生成</button>
+        </div>
+        <div class="composer-switches">
+          <label class="save-output-control"><span>保存输出</span><button id="save-output" class="mini-switch" role="switch" aria-checked="true" aria-label="保存输出"><i></i></button></label>
+          <label class="auto-open-control"><span>完成后打开文件夹</span><button id="auto-open-folder" class="mini-switch" role="switch" aria-checked="false" aria-label="完成后打开文件夹"><i></i></button></label>
+          <span id="optimization-state" class="optimization-state" role="status" hidden></span><span id="speech-state" hidden></span><span id="engine-state" class="engine-state"></span>
+        </div>
+      </section>
+      <footer class="status-bar"><span id="selection-state">未选择素材</span><span id="status-hint">双击预览 · 拖动加入画布</span><span id="download-state"></span></footer>
+      <section id="viewer" class="viewer" role="dialog" aria-modal="true" aria-label="素材预览" hidden>
+        <header class="viewer-toolbar"><strong id="viewer-title"></strong><span id="viewer-resolution"></span><span id="viewer-quality">缩略预览</span><span id="viewer-zoom">100%</span><div class="viewer-actions"><button id="viewer-prev" class="icon-button" title="上一张" aria-label="上一张">‹</button><button id="viewer-next" class="icon-button" title="下一张" aria-label="下一张">›</button><button id="viewer-hd" class="button">高清</button><button id="viewer-original" class="button" title="按原始像素比例显示">100%</button><button id="viewer-fit" class="button">适应窗口</button><button id="viewer-close" class="icon-button" title="关闭预览" aria-label="关闭预览">×</button></div></header>
+        <div class="viewer-body"><div id="viewer-stage" class="viewer-stage" tabindex="0"><img id="viewer-image" alt="" draggable="false"><span id="viewer-loading" class="viewer-loading">正在载入预览</span></div><aside class="viewer-details"><div id="viewer-tags" class="viewer-tags"></div><div class="detail-heading">参考描述<button id="viewer-copy-prompt" class="button muted">复制</button></div><p id="viewer-prompt" class="viewer-prompt"></p><div id="viewer-metadata" class="viewer-metadata"></div><div class="viewer-bottom"><button id="viewer-select" class="button">选为参考</button><button id="viewer-copy-image" class="button">复制图片</button><button id="viewer-add-canvas" class="button primary">加入画布</button></div></aside></div>
+      </section>
+    </main>
+  </div>
+  <div id="context-menu" class="context-menu" role="menu" hidden></div>
+  <section id="jobs-dropdown" class="jobs-dropdown" aria-label="生成任务队列" hidden><header><strong>生成任务</strong><span id="jobs-summary"></span></header><div id="jobs-list" class="jobs-list"></div></section>
+  <section id="generation-settings-popover" class="generation-settings-popover" aria-label="画面设置" hidden>
+    <div class="parameter-section"><strong>分辨率</strong><div class="size-presets" id="size-presets" role="group" aria-label="生成分辨率"></div></div>
+    <div class="parameter-section"><strong>比例</strong><div id="ratio-menu" class="ratio-menu" aria-label="画面比例"></div></div>
+    <div class="parameter-section parameter-bottom"><label>背景<select id="background" aria-label="背景"><option value="auto">自动背景</option><option value="preserve">保留参考背景</option></select></label><button id="workflow-button" class="button">载入工作流</button></div>
+  </section>
+  <section id="model-config-popover" class="model-config-popover" aria-label="模型设置" hidden>
+    <header><div class="model-tab-switch" role="tablist"><span></span><button id="model-tab-image" role="tab" aria-selected="true">图片模型</button><button id="model-tab-language" role="tab" aria-selected="false">语言模型</button></div><button id="model-config-close" class="icon-button" aria-label="关闭模型设置">×</button></header>
+    <section id="image-model-pane" class="model-pane"><select id="engine" aria-label="生成模型"><option value="qwen">千问 2.1</option><option value="moss">MOSS</option></select>
+      <div id="model-local-controls"><div class="model-seed"><span>种子</span><div class="seed-mode-switch"><button id="seed-random" aria-pressed="true">随机</button><button id="seed-fixed" aria-pressed="false">固定</button></div><input id="model-seed" type="number" min="0" step="1" value="0" aria-label="固定种子" disabled></div><div class="model-sampling"><label>步数<input id="model-steps" type="number" min="1" max="150" step="1"></label><label>CFG<input id="model-cfg" type="number" min="0" max="30" step="0.1"></label></div><div id="model-notice" class="model-notice"></div><div class="lora-heading"><strong>LoRA</strong><span>强度</span></div><div id="lora-slots" class="lora-slots"></div><button id="lora-add" class="lora-add" aria-label="添加 LoRA"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+      <div id="model-cloud-controls" class="model-cloud-controls" hidden>此模型通过生成服务配置。</div><a id="model-promotion" class="model-promotion" target="_blank" rel="noopener noreferrer" hidden><strong></strong><small></small></a>
+    </section>
+    <section id="language-model-pane" class="model-pane language-model-pane" hidden><label>服务<select id="language-provider"><option value="local">本地模型</option><option value="bbapi">中转服务</option></select></label><label>语言模型<select id="language-model"><option value="">正在读取模型…</option></select></label><div id="language-model-status" class="language-model-status" role="status"></div><label class="language-detail-label">详细程度 <output id="language-detail-name">适中</output><input id="language-detail" type="range" min="1" max="5" step="1" value="3"></label><div class="language-parameters"><label>温度<input id="language-temperature" type="number" min="0" max="2" step="0.1" value="0.3"></label><label>Top P<input id="language-top-p" type="number" min="0.01" max="1" step="0.05" value="0.9"></label><label>输出上限<input id="language-max-tokens" type="number" min="128" max="8192" step="128" value="2048"></label><label id="language-context-label">上下文<input id="language-num-ctx" type="number" min="2048" max="32768" step="1024" value="8192"></label></div></section>
+    <div id="model-config-state" class="model-config-state" role="status"></div>
+  </section>
+  <input id="external-file-input" type="file" accept="image/*" multiple hidden>
+  <div id="result-actions-menu" class="context-menu" role="menu" hidden></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <dialog id="preset-dialog" class="preset-dialog settings-dialog"><form method="dialog" autocomplete="off">
+    <header><strong>设置</strong><button class="icon-button" value="cancel" aria-label="关闭设置">×</button></header>
+    <div class="settings-tabs" role="tablist"><button type="button" id="settings-tab-provider" role="tab" aria-selected="true" aria-controls="settings-provider">生成服务</button><button type="button" id="settings-tab-presets" role="tab" aria-selected="false" aria-controls="settings-presets">提示词预设</button></div>
+    <section id="settings-provider" class="provider-settings" role="tabpanel" aria-labelledby="settings-tab-provider">
+      <div class="provider-profiles"><select id="provider-profile" aria-label="服务配置"><option value="">当前服务</option></select><button type="button" id="provider-new" class="button">新建服务</button></div><label id="provider-profile-name-row" hidden>服务名称<input id="provider-profile-name" maxlength="40" autocomplete="off" placeholder="新服务名称"></label><label>服务地址<input id="provider-url" type="url" spellcheck="false" placeholder="https://api.example.com/v1" autocomplete="off"></label>
+      <label>API 密钥<span id="provider-key-status" class="provider-key-status"></span><input id="provider-key" type="password" autocomplete="new-password" spellcheck="false" placeholder="输入 API 密钥"></label>
+      <label>默认模型<select id="provider-model"><option value="">尚未读取模型</option></select></label>
+      <div class="provider-links"><a href="https://bbapi.ainivox.cn" target="_blank" rel="noopener noreferrer">获取密钥</a><a href="https://bbapi.ainivox.cn" target="_blank" rel="noopener noreferrer">打开中转站</a></div><div id="provider-state" class="provider-state" role="status"></div>
+      <div class="provider-actions"><button type="button" id="provider-save" class="button">保存配置</button><button type="button" id="provider-test" class="button primary">保存并测试连接</button></div>
+    </section>
+    <section id="settings-presets" role="tabpanel" aria-labelledby="settings-tab-presets" hidden><div class="preset-dialog-body"><label>预设<select id="preset-manage-list"></select></label><label>名称<input id="preset-name" maxlength="40" placeholder="新预设名称"></label><label>提示词<textarea id="preset-prompt" rows="6" placeholder="使用 @形象、@服装、@姿态 引用对应素材"></textarea></label></div></section>
+    <footer id="preset-footer" hidden><button type="button" id="preset-delete" class="button muted">删除</button><span></span><button class="button" value="cancel">取消</button><button type="button" id="preset-save" class="button primary">保存</button></footer>
+  </form></dialog>
+  <dialog id="about-dialog" class="about-dialog"><header><strong>姿绘库</strong><button id="about-close" class="icon-button" aria-label="关闭关于">×</button></header><div class="about-tabs" role="tablist"><button data-about-tab="about" aria-selected="true">关于</button><button data-about-tab="install" aria-selected="false">安装与模型</button><button data-about-tab="sources" aria-selected="false">开源来源</button></div><section data-about-pane="about"><h2>OpenPoseGen</h2><p id="about-product-version">v1.2.0</p><div id="about-repository"></div><p id="about-update-state" role="status"></p><div class="about-update-actions"><button id="about-check" class="button">检查更新</button><button id="about-install" class="button primary" hidden>安装更新</button></div></section><section data-about-pane="install" hidden><strong>素材</strong><p id="about-assets">素材包链接待补充</p><strong>生成模型</strong><div id="about-models"></div></section><section data-about-pane="sources" hidden><div id="about-sources"></div></section></dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

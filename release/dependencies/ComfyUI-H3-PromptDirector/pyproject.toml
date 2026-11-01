@@ -1,0 +1,12 @@
+[project]
+name = "comfyui-bbaigc-minimax-h3"
+version = "1.2.25"
+description = "BBAIGC MiniMax H3 与图片工作台共享节点"
+requires-python = ">=3.10"
+authors = [{name = "BBAIGC"}]
+
+[project.urls]
+Repository = "https://github.com/BBAIGC/ComfyUI-BBAIGC-MiniMax-H3"
+
+[tool.comfy]
+DisplayName = "BBAIGC MiniMax H3 与图片工作台共享节点"

@@ -1,0 +1,20 @@
+PromptDirector contract implementation: original project code, no third-party
+Promptor Python implementation copied or installed.
+
+Primary H3 prompting specification:
+https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_base_en.md
+https://github.com/Comfy-Org/docs/blob/main/tutorials/video/minimax/minimax-h3-prompt-guide.mdx
+
+Native 20-step baseline / optional 8-step LoRA:
+https://github.com/Comfy-Org/docs/blob/main/tutorials/video/minimax/minimax-h3-native.mdx
+Released H3 weights are CFG-distilled:
+https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/README.md
+
+Read-only prior art reviewed, not copied:
+https://github.com/1038lab/ComfyUI-MiniMax-H3-Promptor
+  bdbde80b0b7d4600696d2be7eca7eb2e3c10cf1f
+https://huggingface.co/joeygambino/MiniMax-H3-Multishot-Workflow
+
+Prompt-text dialogue locking does not guarantee that a diffusion model's
+generated audio will reproduce every word or remain silent. Silent export must
+remove the generated audio track. Other modes require listening to the output.

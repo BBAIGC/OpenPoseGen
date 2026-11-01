@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "bundled": [
+    {
+      "id": "core",
+      "directory": "ComfyUI-H3-PromptDirector",
+      "aliases": [
+        "ComfyUI-H3-PromptDirector",
+        "ComfyUI-BBAIGC-MiniMax-H3"
+      ],
+      "version": "1.2.25",
+      "repository": "https://github.com/BBAIGC/ComfyUI-BBAIGC-MiniMax-H3",
+      "marker": "__init__.py",
+      "signature": "QWEN_PANELS"
+    },
+    {
+      "id": "bbapi",
+      "directory": "ComfyUI-BBAPI-Private",
+      "aliases": [
+        "ComfyUI-BBAPI-Private",
+        "ComfyUI-BBAIGC-BBAPI"
+      ],
+      "version": "1.1.5",
+      "repository": "https://github.com/BBAIGC/ComfyUI-BBAIGC-BBAPI",
+      "marker": "secrets.py",
+      "signature": "class ProfileStore"
+    }
+  ],
+  "external": [
+    {
+      "id": "gguf",
+      "repository": "https://github.com/city96/ComfyUI-GGUF",
+      "directory": "ComfyUI-GGUF"
+    }
+  ]
+}

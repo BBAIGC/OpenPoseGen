@@ -1,0 +1,692 @@
+{
+  "last_node_id": 14,
+  "last_link_id": 15,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "PrimitiveStringMultiline",
+      "title": "生成模式",
+      "pos": [
+        0,
+        0
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PrimitiveStringMultiline"
+      },
+      "widgets_values": [
+        "文生图"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "UNETLoader",
+      "title": "图像主模型",
+      "pos": [
+        0,
+        450
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader"
+      },
+      "widgets_values": [
+        "qwen_image_2.1_turbo_int8_convrot.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CLIPLoader",
+      "title": "文本编码器",
+      "pos": [
+        0,
+        900
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "qwen3vl_8b_int8_convrot.safetensors",
+        "qwen_image",
+        "default"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "VAELoader",
+      "title": "图像 VAE",
+      "pos": [
+        0,
+        1350
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            2,
+            14
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "qwen_image_2.1_vae_bf16.safetensors"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CodexQwenStudioEncoder",
+      "title": "千问独立多图编码",
+      "pos": [
+        470,
+        0
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 1
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 2
+        },
+        {
+          "name": "生成模式",
+          "type": "STRING",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "正面条件",
+          "type": "CONDITIONING",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "负面条件",
+          "type": "CONDITIONING",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "参考尺寸空潜空间",
+          "type": "LATENT",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CodexQwenStudioEncoder"
+      },
+      "widgets_values": [
+        "根据所选参考素材生成自然协调的完整人物照片，保留人物特征、服装细节与姿态。",
+        "",
+        0
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CodexQwenCanvasLatent",
+      "title": "生成尺寸",
+      "pos": [
+        470,
+        450
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CodexQwenCanvasLatent"
+      },
+      "widgets_values": [
+        1536,
+        2048,
+        1
+      ]
+    },
+    {
+      "id": 7,
+      "type": "QwenImage21Cache",
+      "title": "千问前缀缓存",
+      "pos": [
+        470,
+        900
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "模型",
+          "type": "MODEL",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "QwenImage21Cache"
+      },
+      "widgets_values": [
+        "auto",
+        "default"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "RandomNoise",
+      "title": "随机种子",
+      "pos": [
+        470,
+        1350
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "NOISE",
+          "type": "NOISE",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RandomNoise"
+      },
+      "widgets_values": [
+        7599136091226839,
+        "fixed"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CFGGuider",
+      "title": "提示词引导",
+      "pos": [
+        940,
+        0
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 5
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 6
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "GUIDER",
+          "type": "GUIDER",
+          "links": [
+            9
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CFGGuider"
+      },
+      "widgets_values": [
+        1.0
+      ]
+    },
+    {
+      "id": 10,
+      "type": "KSamplerSelect",
+      "title": "Turbo 采样器 · Euler",
+      "pos": [
+        940,
+        450
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "SAMPLER",
+          "type": "SAMPLER",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerSelect"
+      },
+      "widgets_values": [
+        "euler"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "ManualSigmas",
+      "title": "Turbo 固定8步日程",
+      "pos": [
+        940,
+        900
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "SIGMAS",
+          "type": "SIGMAS",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ManualSigmas"
+      },
+      "widgets_values": [
+        "1.0, 0.978453, 0.95418, 0.926626, 0.89508, 0.845148, 0.704534, 0.414568, 0"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "SamplerCustomAdvanced",
+      "title": "Turbo 8步采样",
+      "pos": [
+        940,
+        1350
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "noise",
+          "type": "NOISE",
+          "link": 8
+        },
+        {
+          "name": "guider",
+          "type": "GUIDER",
+          "link": 9
+        },
+        {
+          "name": "sampler",
+          "type": "SAMPLER",
+          "link": 10
+        },
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 11
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "LATENT",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "denoised_output",
+          "type": "LATENT",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SamplerCustomAdvanced"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 13,
+      "type": "VAEDecode",
+      "title": "生成图像",
+      "pos": [
+        1410,
+        0
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 13
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "SaveImage",
+      "title": "保存生成结果",
+      "pos": [
+        1410,
+        450
+      ],
+      "size": [
+        420,
+        280
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "资产库/qwen_turbo8"
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      3,
+      0,
+      5,
+      0,
+      "CLIP"
+    ],
+    [
+      2,
+      4,
+      0,
+      5,
+      1,
+      "VAE"
+    ],
+    [
+      3,
+      1,
+      0,
+      5,
+      2,
+      "STRING"
+    ],
+    [
+      4,
+      2,
+      0,
+      7,
+      0,
+      "MODEL"
+    ],
+    [
+      5,
+      7,
+      0,
+      9,
+      0,
+      "MODEL"
+    ],
+    [
+      6,
+      5,
+      0,
+      9,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      7,
+      5,
+      1,
+      9,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      8,
+      8,
+      0,
+      12,
+      0,
+      "NOISE"
+    ],
+    [
+      9,
+      9,
+      0,
+      12,
+      1,
+      "GUIDER"
+    ],
+    [
+      10,
+      10,
+      0,
+      12,
+      2,
+      "SAMPLER"
+    ],
+    [
+      11,
+      11,
+      0,
+      12,
+      3,
+      "SIGMAS"
+    ],
+    [
+      12,
+      6,
+      0,
+      12,
+      4,
+      "LATENT"
+    ],
+    [
+      13,
+      12,
+      0,
+      13,
+      0,
+      "LATENT"
+    ],
+    [
+      14,
+      4,
+      0,
+      13,
+      1,
+      "VAE"
+    ],
+    [
+      15,
+      13,
+      0,
+      14,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "asset_library_version": "1.2.0",
+    "ds": {
+      "scale": 0.65,
+      "offset": [
+        60,
+        60
+      ]
+    },
+    "asset_library_engine": "qwen_turbo8"
+  },
+  "version": 0.4
+}

@@ -1,0 +1,17 @@
+{
+  "directory": "ComfyUI-BBAPI-Private",
+  "files": {
+    "client.py": "017c87b949f62c8a7709533cd445e38cbcb90f0edd515398fc29d37eef964220",
+    "connectors.py": "5616512856363938e20e395e65a3b8c0c759fca66f8fd9cee80e37b3c8540203",
+    "install.py": "9b6a889c4e005197b3d6df0b14acbab17821126b41192d62610844e51b906ea0",
+    "nodes.py": "933a6cde0d3fdaf4f65097c697533d3f43ebcafe257b6394159fb0af28da9ba6",
+    "pyproject.toml": "b1ed7b76d4af385b7c4635909a2207a8e4249db32d33b6d088487df2cf93ca67",
+    "requirements.txt": "557dd2d371004eb614fa429dbf6db1420fb167a75c94e9a7ac013de8220d73d0",
+    "routes.py": "701ccd4c6376b9f42d38fc469275ac5d52f50b047e2d283982ed9f6d5abb546e",
+    "secrets.py": "7910a1fb72ab8b09eb81a485a309f44a4d6e4701c37d9536928d4da9a8ea9353",
+    "__init__.py": "d3393f37077fde72ed345fff94fe8e57a638b58ee8afd174dd4f945a2b15eee8",
+    "web/bbapi.js": "f4b33500d56fdfdb5e06dee315abd4fb13b4dd76268bb1d7a8822d4d2684d176",
+    "web/interop.js": "663433566242a6489ad0daff633db9b7763530fbbbee2b38f252021144a1849e",
+    "web/output_mode.js": "e9dc56fa547a31a3f241781906ce1c43d8c90eefb80ee09fde29401b77159425"
+  }
+}

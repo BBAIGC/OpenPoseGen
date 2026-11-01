@@ -1,0 +1,12 @@
+[project]
+name = "comfyui-bbaigc-bbapi"
+version = "1.1.5"
+description = "BBAIGC BBAPI 图像生成节点"
+requires-python = ">=3.10"
+authors = [{name = "BBAIGC"}]
+
+[project.urls]
+Repository = "https://github.com/BBAIGC/ComfyUI-BBAIGC-BBAPI"
+
+[tool.comfy]
+DisplayName = "BBAIGC BBAPI 图像生成节点"
