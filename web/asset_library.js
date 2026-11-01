@@ -100,7 +100,14 @@ async function progressService() {
 }
 
 async function nativeProgress(result) {
-  const jobs = result.jobs || [], active = jobs.find(job => job.status === 'running');
+  const jobs = result.jobs || [], localJobs = jobs.filter(job => job.queue !== 'cloud' && !String(job.id || job.prompt_id).startsWith('cloud-'));
+  const active = localJobs.find(job => job.status === 'running');
+  const cloudCount = result.cloud_active_count || 0;
+  let cloudStatus = document.getElementById('openposegen-cloud-status');
+  if (cloudCount && !active) {
+    if (!cloudStatus) { cloudStatus = document.createElement('div'); cloudStatus.id = 'openposegen-cloud-status'; cloudStatus.style.cssText = 'position:fixed;left:0;right:0;top:0;height:18px;z-index:9998;border-top:3px solid #40b67e;background:#181d1a;color:#cfeadd;font:12px/15px system-ui;text-align:center;pointer-events:none'; document.body.append(cloudStatus); }
+    cloudStatus.textContent = `姿绘库 · 云端 ${cloudCount} 项处理中`;
+  } else cloudStatus?.remove();
   const service = await progressService();
   if (active && service) {
     const execution = service.getOrMakePrompt(active.id || active.prompt_id);
@@ -399,7 +406,7 @@ export function install() {
       send('notice', { message: '已加入画布' });
     }).catch(error => { if (overlay) { overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto'; } send('notice', { message: error.message, error: true }); });
   }, { capture: true, signal: controller.signal });
-  window.__bbaigcAssetLibrary = { version: '1.2.0', open, close, addAsset, importNodes, watchJobs, session: EXTERNAL_SESSION,
+  window.__bbaigcAssetLibrary = { version: '1.2.1', open, close, addAsset, importNodes, watchJobs, session: EXTERNAL_SESSION,
     dispose() { close(); clearTimeout(jobTimer); document.getElementById('openposegen-optimization-status')?.remove(); sidebarObserver.disconnect(); controller.abort(); for (const request of requests) request.abort(); style.remove();
       for (const [prototype, { previous, wrapper }] of patchedMenus) if (prototype.getExtraMenuOptions === wrapper) prototype.getExtraMenuOptions = previous;
       patchedMenus.clear(); manager.unregisterSidebarTab?.('bbaigc-asset-library'); } };

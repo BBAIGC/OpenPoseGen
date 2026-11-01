@@ -11,6 +11,7 @@ from pathlib import Path
 import secrets
 import shutil
 import sys
+import time
 from uuid import uuid4
 from urllib.parse import urlsplit, urlencode
 
@@ -20,7 +21,7 @@ from catalog_store import CatalogStore, atomic_json
 from external_store import ExternalStore
 from runtime_paths import discover
 
-VERSION = '1.2.0'
+VERSION = '1.2.1'
 ROOT = Path(__file__).resolve().parent
 RUNTIME = discover()
 COMFY = RUNTIME['comfy_url']
@@ -40,10 +41,17 @@ def create_app(asset_root, port=8191):
     media_slots = asyncio.Semaphore(2)
     media_pending = set()
     imports = asyncio.Lock()
+    deletions = asyncio.Lock()
     settings_lock = asyncio.Lock()
     result_slots = asyncio.Semaphore(2)
     generations = None
+    clouds = None
     languages = None
+    deleted_path = Path(asset_root) / 'deleted-results.json'
+    try:
+        deleted_results = json.loads(deleted_path.read_text(encoding='utf-8')) if deleted_path.is_file() else {}
+    except (OSError, ValueError):
+        deleted_results = {}
 
     @web.middleware
     async def guard(request, handler):
@@ -107,6 +115,16 @@ def create_app(asset_root, port=8191):
             languages = LanguageService(provider=provider)
         return languages
 
+    def cloud():
+        nonlocal clouds
+        if clouds is None:
+            from cloud_jobs import CloudJobs
+            def reference_path(identifier):
+                return external.resolve(identifier) if identifier.startswith('external-') else store.original(identifier)
+            clouds = CloudJobs(provider=provider, resolver=reference_path, data_dir=store.root,
+                               output_root=RUNTIME['output'], temp_root=RUNTIME['temp'], on_completed=completed_folder, max_concurrency=16, input_root=RUNTIME['input'])
+        return clouds
+
     async def completed_folder(job):
         if not job.get('images'):
             return
@@ -139,7 +157,7 @@ def create_app(asset_root, port=8191):
 
     def public_job(result):
         value = dict(result)
-        value['images'] = [public_image(image) for image in result.get('images', [])]
+        value['images'] = [public_image(image) for image in result.get('images', []) if json.dumps(image_descriptor(image), sort_keys=True) not in deleted_results]
         for image in value['images']:
             for key in ('width', 'height'):
                 if key not in image and result.get('settings', {}).get(key):
@@ -165,6 +183,10 @@ def create_app(asset_root, port=8191):
         defaults = await asyncio.to_thread(read_settings)
         for key, item in defaults.items():
             value.setdefault(key, item)
+        if str(value.get('engine', '')).startswith('bbapi:'):
+            value['lora_slots'] = []
+            value.pop('steps', None)
+            value.pop('cfg', None)
         # Keep role constraints alongside the prompt, while respecting the user's text.
         from prompt_presets import build_role_guidance
         if not isinstance(value.get('asset_ids', []), list) or len(value.get('asset_ids', [])) > 16 or any(not isinstance(item, str) for item in value.get('asset_ids', [])):
@@ -258,7 +280,9 @@ def create_app(asset_root, port=8191):
 
     @routes.post('/asset-library/api/generate')
     async def generate(request):
-        return web.json_response(await generation().submit(await generation_body(request)))
+        value = await generation_body(request)
+        service = cloud() if str(value.get('engine', '')).startswith('bbapi:') else generation()
+        return web.json_response(public_job(await service.submit(value)))
 
     @routes.post('/asset-library/api/workflow')
     async def workflow(request):
@@ -295,6 +319,8 @@ def create_app(asset_root, port=8191):
             for slot in slots:
                 if not isinstance(slot, dict) or not isinstance(slot.get('name'), str) or len(slot['name']) > 500 or type(slot.get('enabled')) is not bool or type(slot.get('strength')) not in (int, float) or not -2 <= slot['strength'] <= 2:
                     raise ValueError('LoRA设置无效。')
+                if type(slot.get('steps', 8)) is not int or not 1 <= slot.get('steps', 8) <= 100 or type(slot.get('cfg', 1)) not in (int, float) or not 0 <= slot.get('cfg', 1) <= 20:
+                    raise ValueError('LoRA细化步数或CFG设置无效。')
             overrides = data['model_overrides']
             if not isinstance(overrides, dict) or len(overrides) > 64:
                 raise ValueError('模型采样设置无效。')
@@ -446,22 +472,30 @@ def create_app(asset_root, port=8191):
     @routes.get('/asset-library/api/jobs')
     async def jobs(request):
         result = await generation().jobs_list(after_seq=max(0, int(request.query.get('after_seq', '0'))))
+        remote = await cloud().jobs_list()
+        result['jobs'] += remote.get('jobs', [])
+        result['jobs'].sort(key=lambda job: job.get('created_at') or '', reverse=True)
+        result['active_count'] += remote.get('active_count', 0)
+        result['cloud_active_count'] = remote.get('active_count', 0)
         result['jobs'] = [public_job(job) for job in result.get('jobs', [])]
         return web.json_response(result)
 
     @routes.get('/asset-library/api/jobs/{identifier}')
     async def job(request):
-        result = await generation().result(request.match_info['identifier'])
+        identifier = request.match_info['identifier']
+        result = await (cloud() if identifier.startswith('cloud-') else generation()).result(identifier)
         result['id'] = result.get('prompt_id', request.match_info['identifier'])
         return web.json_response(public_job(result))
 
     @routes.post('/asset-library/api/jobs/{identifier}/cancel')
     async def cancel(request):
-        return web.json_response(public_job(await generation().cancel(request.match_info['identifier'])))
+        identifier = request.match_info['identifier']
+        return web.json_response(public_job(await (cloud() if identifier.startswith('cloud-') else generation()).cancel(identifier)))
 
     @routes.post('/asset-library/api/jobs/{identifier}/retry')
     async def retry(request):
-        return web.json_response(await generation().retry(request.match_info['identifier']))
+        identifier = request.match_info['identifier']
+        return web.json_response(public_job(await (cloud() if identifier.startswith('cloud-') else generation()).retry(identifier)))
 
     async def cache_result(image):
         descriptor = image_descriptor(image)
@@ -534,6 +568,49 @@ def create_app(asset_root, port=8191):
                     raise RuntimeError(result.get('message') or result.get('error') or '无法打开结果位置。')
         return web.json_response({'opened': True})
 
+    @routes.post('/asset-library/api/results/workflow')
+    async def result_workflow(request):
+        descriptor = image_descriptor((await body(request)).get('image'))
+        path = await cache_result(descriptor)
+        def read_workflow():
+            from PIL import Image
+            with Image.open(path) as image:
+                value = image.info.get('workflow')
+            if not value:
+                raise ValueError('这张图片没有完整工作流元数据，旧图可从任务参数重新载入。')
+            workflow = json.loads(value)
+            if not isinstance(workflow, dict) or not isinstance(workflow.get('nodes'), list) or len(workflow['nodes']) > 512:
+                raise ValueError('图片内的工作流格式无效。')
+            return workflow
+        return web.json_response({'workflow': await asyncio.to_thread(read_workflow)})
+
+    @routes.post('/asset-library/api/results/delete')
+    async def result_delete(request):
+        value = await body(request)
+        if value.get('confirmed') is not True:
+            raise ValueError('请先确认删除这张结果。')
+        descriptor = image_descriptor(value.get('image'))
+        async with deletions:
+            local = await generation().jobs_list()
+            remote = await cloud().jobs_list()
+            candidates = [image_descriptor(image) for job in [*local.get('jobs', []), *remote.get('jobs', [])] for image in job.get('images', [])]
+            if descriptor not in candidates:
+                raise ValueError('只能删除姿绘库生成的结果。')
+            key = json.dumps(descriptor, sort_keys=True)
+            if key in deleted_results:
+                return web.json_response({'deleted': True})
+            directory = RUNTIME['output'] if descriptor['type'] == 'output' else RUNTIME['temp']
+            path = (directory / descriptor['subfolder'] / descriptor['filename']).resolve()
+            if not path.is_relative_to(directory.resolve()):
+                raise ValueError('结果文件位置无效。')
+            backup = store.root / '.deleted-results' / uuid4().hex / descriptor['filename']
+            if path.is_file():
+                backup.parent.mkdir(parents=True, exist_ok=True)
+                await asyncio.to_thread(shutil.move, path, backup)
+            deleted_results[key] = {'backup': str(backup.relative_to(store.root)), 'removed_at': time.time()}
+            await asyncio.to_thread(atomic_json, deleted_path, deleted_results)
+        return web.json_response({'deleted': True})
+
     @routes.post('/asset-library/api/results/save')
     async def result_save(request):
         image = image_descriptor((await body(request)).get('image'))
@@ -553,6 +630,8 @@ def create_app(asset_root, port=8191):
         saved_image = {'filename': destination.name, 'subfolder': '资产库', 'type': 'output', 'width': width, 'height': height}
         if hasattr(generation(), 'mark_saved'):
             await generation().mark_saved(image, saved_image)
+        if clouds is not None:
+            await clouds.mark_saved(image, saved_image)
         return web.json_response({'image': public_image(saved_image), 'saved': True})
 
     @routes.post('/asset-library/api/import/{identifier}')
@@ -671,6 +750,8 @@ def create_app(asset_root, port=8191):
             await generations.close()
         if languages is not None:
             await languages.close()
+        if clouds is not None:
+            await clouds.close()
         await asyncio.to_thread(external.close)
     app.on_cleanup.append(cleanup)
     return app

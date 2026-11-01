@@ -10,7 +10,7 @@ from urllib.request import urlopen
 from aiohttp import web
 from server import PromptServer
 
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 WEB_DIRECTORY = './comfy_web'
 NODE_CLASS_MAPPINGS = {}
 NODE_DISPLAY_NAME_MAPPINGS = {}

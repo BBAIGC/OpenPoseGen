@@ -46,8 +46,9 @@ def elapsed(job):
 def graph_metadata(graph):
     titles = {str(key): item.get("_meta", {}).get("title") or item.get("class_type", str(key))
               for key, item in graph.items() if isinstance(item, dict)}
-    sampler = next((str(key) for key, item in graph.items() if item.get("class_type") in ("KSampler", "SamplerCustomAdvanced", "BBAPIMultiReference", "BBAPIPromptToImage")), None)
-    return {"node_count": len(titles), "node_titles": titles, "sampler_node": sampler}
+    samplers = [str(key) for key, item in graph.items() if item.get("class_type") in ("KSampler", "SamplerCustomAdvanced", "BBAPIMultiReference", "BBAPIPromptToImage")]
+    return {"node_count": len(titles), "node_titles": titles, "sampler_node": samplers[0] if samplers else None,
+            "sampler_nodes": samplers}
 
 
 def owned_prompt(prompt):
@@ -139,6 +140,8 @@ class JobStore:
                 if isinstance(job, dict) and isinstance(job.get("prompt_id"), str) and known_engine(job.get("engine")):
                     # Monotonic samples belong to one process lifetime.
                     job.pop("_sampling_progress", None)
+                    if job.get("_graph"):
+                        job.update(graph_metadata(job["_graph"]))
                     self.jobs[job["prompt_id"]] = job
 
     def trim(self):

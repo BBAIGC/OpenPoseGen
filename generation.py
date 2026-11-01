@@ -32,7 +32,7 @@ except ImportError:
     from job_store import ACTIVE, FINAL, JobStore, from_timestamp, infer_settings, new_job, now_iso, owned_prompt, public_job
 
 ROOT = Path(__file__).resolve().parent
-VERSION = "1.2.0"
+VERSION = "1.2.1"
 RATIOS = ("1:1", "1:2", "2:1", "9:16", "16:9", "3:4", "4:3", "3:2", "2:3", "5:4", "4:5", "21:9", "9:21")
 RESOLUTIONS = {"1K": 1024, "2K": 2048, "4K": 4096}
 TURBO_SIGMAS = "1.0, 0.978453, 0.95418, 0.926626, 0.89508, 0.845148, 0.704534, 0.414568, 0"
@@ -148,7 +148,7 @@ def normalize(payload, cloud_model=None):
     auto_open_folder = payload.get("auto_open_folder", False)
     if type(auto_open_folder) is not bool:
         raise GenerationError("完成后定位文件夹须为开关值。")
-    loras = payload.get("lora_slots", [{"name": "", "strength": 1.0, "enabled": False} for _ in range(5)])
+    loras = [] if is_cloud else payload.get("lora_slots", [{"name": "", "strength": 1.0, "steps": 8, "cfg": 1.0, "enabled": False} for _ in range(5)])
     if not isinstance(loras, list) or len(loras) > 20:
         raise GenerationError("LoRA槽位最多20个。")
     slots = []
@@ -158,10 +158,14 @@ def normalize(payload, cloud_model=None):
         strength = slot.get("strength", 1.0)
         if isinstance(strength, bool) or not isinstance(strength, (int, float)) or not math.isfinite(strength) or not -2 <= strength <= 2:
             raise GenerationError("LoRA强度须为-2～2。")
-        slots.append({"name": slot.get("name", ""), "strength": float(strength), "enabled": slot.get("enabled", False)})
+        slot_steps, slot_cfg = slot.get("steps", 8), slot.get("cfg", 1.0)
+        if type(slot_steps) is not int or not 1 <= slot_steps <= 100:
+            raise GenerationError("每项LoRA细化步数须为1～100的整数。")
+        if isinstance(slot_cfg, bool) or not isinstance(slot_cfg, (int, float)) or not math.isfinite(slot_cfg) or not 0 <= slot_cfg <= 20:
+            raise GenerationError("每项LoRA细化CFG须为0～20。")
+        slots.append({"name": slot.get("name", ""), "strength": float(strength), "steps": slot_steps,
+                      "cfg": float(slot_cfg), "enabled": slot.get("enabled", False)})
     if is_cloud:
-        if any(slot["enabled"] for slot in slots):
-            raise GenerationError("云端模型不支持本机LoRA，请先关闭已启用的LoRA。")
         if size["resolution"] not in engine_info["resolutions"] or size["ratio"] not in engine_info["ratios"]:
             raise GenerationError("此云端通道不支持当前分辨率或比例。")
         steps, cfg = None, None
@@ -257,9 +261,6 @@ def api_prompt(settings, references=(), source_count=None):
         if engine != "qwen":
             loader_inputs["weight_dtype"] = "default"
         model = add(loader, "图像主模型", **loader_inputs)
-        for index, slot in enumerate(settings.get("lora_slots", []), 1):
-            if slot["enabled"]:
-                model = add("LoraLoaderModelOnly", f"LoRA {index}", model=model, lora_name=slot["name"], strength_model=slot["strength"])
         clip = add("CLIPLoader", "文本编码器", clip_name=config["clip"],
                    type="qwen_image" if is_qwen else "moss_image", device="default")
         vae = add("VAELoader", "图像 VAE", vae_name=config["vae"])
@@ -299,6 +300,37 @@ def api_prompt(settings, references=(), source_count=None):
                           cfg=config["cfg"], sampler_name=config["sampler"], scheduler=config["scheduler"],
                           positive=positive, negative=negative, latent_image=latent,
                           denoise=0.65 if engine == "moss" and image_nodes else 1.0)
+        # Base generation stays unpatched. Each enabled slot adds one real,
+        # ordered latent-refinement pass with its own steps/CFG; model patches
+        # accumulate in the explicitly selected slot order.
+        for index, slot in enumerate(settings.get("lora_slots", []), 1):
+            if not slot["enabled"]:
+                continue
+            model = add("LoraLoaderModelOnly", f"LoRA {index}", model=model, lora_name=slot["name"], strength_model=slot["strength"])
+            stage_seed = (settings["seed"] + index) % (1 << 53)
+            stage_steps, stage_cfg = slot.get("steps", 8), slot.get("cfg", 1.0)
+            if engine == "qwen_turbo8":
+                # Same resampled img2img tail as mature image_sampling.py:
+                # full_steps=int(steps/denoise), retain only the final steps.
+                curve = [float(value) for value in TURBO_SIGMAS.split(",")]
+                full_steps = stage_steps * 4
+                tail = []
+                for position in range(full_steps - stage_steps, full_steps):
+                    location = position * (len(curve) - 1) / full_steps
+                    left = min(int(location), len(curve) - 2)
+                    tail.append(curve[left] + (curve[left + 1] - curve[left]) * (location - left))
+                tail.append(0.0)
+                noise = add("RandomNoise", f"LoRA {index}细化种子", noise_seed=stage_seed)
+                guider = add("CFGGuider", f"LoRA {index}细化引导", model=model, positive=positive, negative=negative, cfg=stage_cfg)
+                sampler = add("KSamplerSelect", f"LoRA {index}细化采样器", sampler_name=config["sampler"])
+                sigmas = add("ManualSigmas", f"LoRA {index}细化日程", sigmas=", ".join(format(value, ".12g") for value in tail))
+                samples = add("SamplerCustomAdvanced", f"LoRA {index}独立细化 · {stage_steps}步", noise=noise,
+                              guider=guider, sampler=sampler, sigmas=sigmas, latent_image=samples)
+            else:
+                samples = add("KSampler", f"LoRA {index}独立细化 · {stage_steps}步", model=model,
+                              seed=stage_seed, steps=stage_steps, cfg=stage_cfg, sampler_name=config["sampler"],
+                              scheduler=config["scheduler"], positive=positive, negative=negative,
+                              latent_image=samples, denoise=0.25)
         decoded = add("VAEDecode", "生成图像", samples=samples, vae=vae)
     if settings.get("save_output", True):
         add("SaveImage", "保存生成结果", images=decoded, filename_prefix=f"资产库/{engine}")
@@ -868,7 +900,7 @@ class GenerationService:
 
     @staticmethod
     def _sampling_clock(job, node, value, maximum):
-        if str(node) != job.get("sampler_node"):
+        if str(node) not in job.get("sampler_nodes", [job.get("sampler_node")]):
             job.pop("_sampling_progress", None)
             return
         tracker = job.get("_sampling_progress", {})
@@ -906,16 +938,20 @@ class GenerationService:
             values = data
             if kind == "progress_state":
                 node_states = data.get("nodes", {})
-                sampler = job.get("sampler_node")
-                values = node_states.get(sampler) or next((value for value in node_states.values() if value.get("state") == "running"), {})
+                samplers = job.get("sampler_nodes", [job.get("sampler_node")])
+                values = next((node_states[key] for key in samplers if key in node_states and node_states[key].get("state") == "running"),
+                              node_states.get(job.get("node")) or next((value for value in node_states.values() if value.get("state") == "running"), {}))
                 node = values.get("node_id", node)
             try:
                 value, maximum = float(values.get("value")), float(values.get("max"))
                 if math.isfinite(value) and math.isfinite(maximum) and maximum > 0:
                     self._sampling_clock(job, node, value, maximum)
                     job.update(node=str(node) if node is not None else job.get("node"), value=value, max=maximum, step=value)
-                    if str(node) == job.get("sampler_node"):
-                        job["progress"] = min(0.99, max(0, value / maximum))
+                    samplers = job.get("sampler_nodes", [job.get("sampler_node")])
+                    if str(node) in samplers:
+                        stage = samplers.index(str(node))
+                        job.update(sampling_stage=stage + 1, sampling_stages=len(samplers))
+                        job["progress"] = min(0.99, max(0, (stage + value / maximum) / len(samplers)))
             except (TypeError, ValueError, OverflowError):
                 pass
         elif kind == "execution_error":
@@ -1094,10 +1130,12 @@ class GenerationService:
         settings, graph = copy.deepcopy(job["settings"]), copy.deepcopy(job["_graph"])
         settings["seed"] = secrets.randbits(53)
         for node in graph.values():
+            stage_match = re.search(r"LoRA (\d+)", node.get("_meta", {}).get("title", ""))
+            stage_seed = (settings["seed"] + (int(stage_match[1]) if stage_match else 0)) % (1 << 53)
             if node.get("class_type") == "KSampler":
-                node["inputs"]["seed"] = settings["seed"]
+                node["inputs"]["seed"] = stage_seed
             elif node.get("class_type") == "RandomNoise":
-                node["inputs"]["noise_seed"] = settings["seed"]
+                node["inputs"]["noise_seed"] = stage_seed
             elif node.get("class_type") in ("BBAPIMultiReference", "BBAPIPromptToImage"):
                 node["inputs"]["重新生成编号"] = settings["seed"] % 2147483647
         workflow = canvas_workflow(graph, {**self.schemas, **self.live_schemas})
