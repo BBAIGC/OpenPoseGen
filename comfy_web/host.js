@@ -406,7 +406,7 @@ export function install() {
       send('notice', { message: '已加入画布' });
     }).catch(error => { if (overlay) { overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto'; } send('notice', { message: error.message, error: true }); });
   }, { capture: true, signal: controller.signal });
-  window.__bbaigcAssetLibrary = { version: '1.2.2', open, close, addAsset, importNodes, watchJobs, session: EXTERNAL_SESSION,
+  window.__bbaigcAssetLibrary = { version: '1.2.3', open, close, addAsset, importNodes, watchJobs, session: EXTERNAL_SESSION,
     dispose() { close(); clearTimeout(jobTimer); document.getElementById('openposegen-optimization-status')?.remove(); sidebarObserver.disconnect(); controller.abort(); for (const request of requests) request.abort(); style.remove();
       for (const [prototype, { previous, wrapper }] of patchedMenus) if (prototype.getExtraMenuOptions === wrapper) prototype.getExtraMenuOptions = previous;
       patchedMenus.clear(); manager.unregisterSidebarTab?.('bbaigc-asset-library'); } };

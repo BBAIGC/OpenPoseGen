@@ -2,7 +2,7 @@
 
 # OpenPoseGen · 姿绘库
 
-![版本](https://img.shields.io/badge/版本-v1.2.2-d8b94b?style=flat-square)
+![版本](https://img.shields.io/badge/版本-v1.2.3-d8b94b?style=flat-square)
 ![ComfyUI](https://img.shields.io/badge/ComfyUI-参考搭配-222222?style=flat-square)
 ![本地与API](https://img.shields.io/badge/生成-本地%20%2F%20BBAPI-438867?style=flat-square)
 
@@ -14,7 +14,7 @@
 
 ## 素材包下载
 
-**原图包的百度云链接将在作者上传后补充于这里及应用关于页。** 发布包不含原图、模型权重或本机密钥。现可使用外接模式导入自己的图片，也可运行仓库的公开来源导入工具准备 RuiC 素材。
+模型权重与参考图库需单独准备。可使用外接模式导入自己的图片，也可通过[原作者页面](https://github.com/HRuiCcc/RuiC-PoseAtlas#readme)或仓库的公开来源导入工具准备 RuiC 素材。
 
 参考图库来自 [HRuiCcc/RuiC-PoseAtlas](https://github.com/HRuiCcc/RuiC-PoseAtlas)，共 **4,345 项**：形象1,499、服装1,407、姿态1,439。原作者与图片来源的许可分别适用，详情见 [开源与素材声明](THIRD_PARTY_NOTICES.md)。
 
@@ -55,7 +55,6 @@
 
 ## 真实界面
 
-<!-- Publication screenshots are generated from the actual application; no reference library images are bundled here. -->
 ![分类浏览](docs/assets/classification.png)
 
 ![参考搭配](docs/assets/composition.png)
@@ -72,7 +71,7 @@
 
 默认部署普通千问2.1、Turbo8步、MOSS与实时语音；先计算所缺文件和磁盘空间，只下载 install/models.json 指定且本机没有的文件。完整路线约49.1GB权重，另预留约8GB素材及缓存，模型共用编码器和VAE不重复下载。如果空间或硬件不能运行默认组合，说明实际缺口后只就必要方案问我一次。模型需要登录、验证码或接受许可时由我操作，其他步骤继续自动完成。
 
-安装发布包内共享运行节点、GGUF依赖、Python依赖与工作流，按精确版本准备模型，写入本机 runtime.json。素材包链接若已公布就下载校验导入；尚未公布时先用外接模式，并按公开来源导入工具补齐可用参考。BBAPI可配置但不用我的密钥提交付费测试，不读取或上传其他软件凭据。
+安装发布包内共享运行节点、GGUF依赖、Python依赖与工作流，按精确版本准备模型，写入本机 runtime.json。从原作者页面获取素材并校验导入，或使用公开来源导入工具；下载完成前可先用外接模式。BBAPI可配置但不用我的密钥提交付费测试，不读取或上传其他软件凭据。
 
 完成无付费、无GPU推理的加载检查：入口、三种模式、模型枚举、LoRA列表、实时语音依赖和所有原图路径应可用。需要重新启动ComfyUI才能载入新节点时明确告诉我；不要擅自结束正在运行的生成任务。报告安装位置、版本、已就绪路线和真实缺失项，不把静态检查写成生图质量已验收。
 ```
@@ -99,13 +98,13 @@
 
 图库按页查询并虚拟化，只读取当前视口附近的缩略图。前端最多4个图片请求、48个等待项，解码上限96张／24MiB，压缩缓存最多96项／8MiB；关闭面板清空图像与录音资源，已排队生成继续。服务端最多2个图像解码线程；大图仅保留当前一张。高清原图用于生成，不以缩略图冒充原始参考。
 
-普通25步及Turbo8步已用三参考、1K竖图完成真实生成与动作复核；其他设备、复杂姿态和4K输出仍需按实际显存验证。图像参考不是硬姿态控制，结果会受模型能力、素材和提示词影响。
+普通千问默认25步，Turbo采用固定8步。其他设备、复杂姿态和4K输出需按实际显存选择配置。图像参考不是硬姿态控制，结果会受模型能力、素材和提示词影响。
 
 版本入口在左下角，关于页提供仓库、更新和开源来源。更新包只覆盖本工具及明确拥有的源码文件，用户数据和素材位于独立目录；发布清单包含SHA-256。
 
 ## 联系与支持
 
-问题反馈请使用 [Issues](https://github.com/BBAIGC/OpenPoseGen/issues)，附版本、模型及脱敏错误。以下图片沿用BBAIGC近期公开仓库的联系与自愿支持入口。
+问题反馈请使用 [Issues](https://github.com/BBAIGC/OpenPoseGen/issues)，附版本、模型及脱敏错误。
 
 <table>
 <tr><th>联系作者</th><th>微信支持</th><th>支付宝支持</th></tr>

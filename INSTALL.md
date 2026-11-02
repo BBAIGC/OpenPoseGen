@@ -4,7 +4,7 @@
 
 ## 完整发布包
 
-从 [GitHub Releases](https://github.com/BBAIGC/OpenPoseGen/releases) 获取完整ZIP。包内包含姿绘库源码及版本固定的BBAIGC共享节点，不含权重、参考图库、密钥或用户生成记录。
+从 [GitHub Releases](https://github.com/BBAIGC/OpenPoseGen/releases) 获取完整ZIP。包内包含姿绘库源码及版本固定的BBAIGC共享节点。模型权重与参考图库需单独准备。
 
 ```powershell
 .\install\install.ps1 -ComfyBase '实例目录' -ComfyCore 'ComfyUI核心目录' -ComfyPython '当前实例python.exe' -Plan
@@ -28,7 +28,7 @@
 
 模型来源、许可与精确文件名见[MODELS.md](MODELS.md)。上游登录或许可要求由用户完成；安装器只读取本机`HF_TOKEN`／`CIVITAI_API_KEY`，不会写进工作流或仓库。
 
-文字优化是可选功能，不包含在默认图像模型下载中。可复用已有API服务或本机Ollama。先从[Ollama官网](https://ollama.com/download)安装并按官方方式启动；希望下载公开文字模型时，在上面命令增加`-TextModel 'qwen3.5:9b'`。该参数仅执行明确选择的`ollama pull`，不把作者私有`uncensored-*`别名当成公开可下载模型；安装器本轮不会自动安装或替用户启动Ollama。保持默认`none`不下载文字权重。
+文字优化是可选功能，不包含在默认图像模型下载中。可复用已有API服务或本机Ollama。先从[Ollama官网](https://ollama.com/download)安装并按官方方式启动；希望下载公开文字模型时，在上面命令增加`-TextModel 'qwen3.5:9b'`。该参数执行所选模型的`ollama pull`；请使用Ollama模型库中可拉取的模型名。安装器不会自动安装或启动Ollama。保持默认`none`不下载文字权重。
 
 ## 共享节点与首次启动
 
@@ -40,7 +40,7 @@
 
 ## 参考素材
 
-百度云原图包链接将由作者补充。已取得三份原图ZIP时，使用本机导入工具按ID校验并迁入独立素材目录：姿态1,439张、形象1,499张、服装1,407张；不要把图库或自己的压缩包上传本仓库。
+从[原作者页面](https://github.com/HRuiCcc/RuiC-PoseAtlas#readme)获取原图ZIP后，可使用本机导入工具按ID校验并迁入独立素材目录：姿态1,439张、形象1,499张、服装1,407张。
 
 公开源导入：
 
