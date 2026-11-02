@@ -27,7 +27,7 @@ ARCHIVES = {
     "identity": {"name": "AI 作图脸库.zip", "directory": "portrait/img", "count": 1499},
     "outfit": {"name": "AI 服装库.zip", "directory": "costume/img", "count": 1407},
 }
-DEFAULT_ARCHIVES = Path(r"C:\Users\Mr.Chen\Desktop\AI")
+DEFAULT_ARCHIVES = Path.cwd()
 PNG = b"\x89PNG\r\n\x1a\n"
 BLOCK = 1024 * 1024
 

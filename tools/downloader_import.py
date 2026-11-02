@@ -17,7 +17,7 @@ import time
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-DEFAULT_ROOT = Path(r"F:\AIGC\AssetLibrary\RuiC-PoseAtlas")
+DEFAULT_ROOT = Path(os.environ.get("OPENPOSEGEN_ASSET_ROOT") or os.environ.get("BBAIGC_ASSET_ROOT") or Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local" / "share")) / "OpenPoseGen" / "assets")
 COMMIT = "0e7851b05c2ab95c85e5d9d22c2c53130f3c4ba3"
 REPOSITORY = "https://github.com/HRuiCcc/RuiC-PoseAtlas"
 RAW = f"https://raw.githubusercontent.com/HRuiCcc/RuiC-PoseAtlas/{COMMIT}/"

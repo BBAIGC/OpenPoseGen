@@ -15,7 +15,12 @@ import aiohttp
 def discover_paths(plugin_dir=None, environment=None):
     plugin_dir, environment = Path(plugin_dir or Path(__file__).resolve().parent), os.environ if environment is None else environment
     sibling = plugin_dir.parent / "ComfyUI-BBAPI-Private"
-    runtime = Path(environment["OPENPOSEGEN_BBAPI_ROOT"]) if environment.get("OPENPOSEGEN_BBAPI_ROOT") else sibling if sibling.is_dir() else Path(r"F:\AIGC\ComfyUI_NEW\custom_nodes\ComfyUI-BBAPI-Private")
+    try:
+        config = json.loads((plugin_dir / "runtime.json").read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError):
+        config = {}
+    base = Path(environment.get("OPENPOSEGEN_COMFY_BASE") or config.get("comfy_base") or plugin_dir / ".local-runtime")
+    runtime = Path(environment["OPENPOSEGEN_BBAPI_ROOT"]) if environment.get("OPENPOSEGEN_BBAPI_ROOT") else sibling if sibling.is_dir() else base / "custom_nodes" / "ComfyUI-BBAPI-Private"
     profiles = Path(environment["COMFYUI_BBAPI_PRIVATE_CONFIG"]) if environment.get("COMFYUI_BBAPI_PRIVATE_CONFIG") else runtime.parent.parent / "user" / "bbapi_private_profiles.json"
     return runtime, profiles
 

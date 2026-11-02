@@ -2,7 +2,7 @@
 
 # OpenPoseGen · 姿绘库
 
-![版本](https://img.shields.io/badge/版本-v1.2.4-d8b94b?style=flat-square)
+![版本](https://img.shields.io/badge/版本-v1.2.5-d8b94b?style=flat-square)
 ![ComfyUI](https://img.shields.io/badge/ComfyUI-参考搭配-222222?style=flat-square)
 ![本地与API](https://img.shields.io/badge/生成-本地%20%2F%20BBAPI-438867?style=flat-square)
 

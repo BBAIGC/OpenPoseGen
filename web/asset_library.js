@@ -8,6 +8,7 @@ const EXTERNAL_SESSION = crypto.randomUUID();
 let pendingExternal = null;
 const patchedMenus = new Map();
 let overlay = null, frame = null, layout = null, token = '', pendingOpen = null;
+let openingController = null;
 let drag = null, dropped = false, epoch = 0;
 let panelWidth = Number(localStorage.getItem('bbaigc-asset-panel-width')) || 0;
 let jobTimer = null, jobSeq = 0, jobPoll = null, nativeService = null, nativeJob = null;
@@ -15,10 +16,13 @@ let optimizing = false;
 const requests = new Set();
 let controller = new AbortController();
 
-async function request(path, data, method = 'POST') {
+async function request(path, data, method = 'POST', { signal, timeout = 30000 } = {}) {
   const abort = new AbortController();
   requests.add(abort);
-  const timer = setTimeout(() => abort.abort(), 30000);
+  const cancel = () => abort.abort();
+  if (signal?.aborted) abort.abort();
+  signal?.addEventListener('abort', cancel, { once: true });
+  const timer = setTimeout(cancel, timeout);
   try {
     for (let attempt = 0; attempt < 2; attempt++) {
       if (data !== undefined && !token) token = (await request('/bootstrap')).token;
@@ -32,7 +36,7 @@ async function request(path, data, method = 'POST') {
       if (!response.ok) throw new Error(value.error || '资产库请求失败');
       return value;
     }
-  } finally { clearTimeout(timer); requests.delete(abort); }
+  } finally { clearTimeout(timer); signal?.removeEventListener('abort', cancel); requests.delete(abort); }
 }
 
 function send(type, values = {}) {
@@ -173,6 +177,7 @@ function selected(value) {
 
 function close() {
   epoch++;
+  openingController?.abort(); openingController = null; pendingOpen = null;
   send('visibility', { visible: false });
   layout?.disconnect(); layout = null;
   const previous = overlay;
@@ -186,10 +191,12 @@ function close() {
 }
 
 async function open() {
+  // A discarded DOM tree must not leave the toggle holding an invisible panel.
+  if (overlay && !overlay.isConnected) close();
   if (overlay) { close(); return; }
   if (pendingOpen) return pendingOpen;
-  window.__codexWorkflowLibrary?.closeLibrary?.();
   const current = ++epoch;
+  const opening = new AbortController(); openingController = opening;
   overlay = document.createElement('section'); overlay.id = 'bbaigc-asset-library-overlay';
   overlay.setAttribute('aria-label', '姿绘库');
   overlay.style.cssText = 'position:fixed;z-index:1310;display:flex;background:var(--comfy-menu-bg,#181818);overflow:hidden;opacity:0;transition:opacity 160ms ease;border-right:1px solid #555;box-shadow:5px 0 18px #0003';
@@ -202,11 +209,19 @@ async function open() {
   for (const element of document.querySelectorAll('[data-testid="side-toolbar"],.sidebar-content-container,.workflow-tabs-container,#main-panel')) layout.observe(element);
   const launch = (async () => {
     try {
-      try { await request('/bootstrap'); }
+      window.__codexWorkflowLibrary?.closeLibrary?.();
+      try { await request('/bootstrap', undefined, 'GET', { signal: opening.signal, timeout: 3000 }); }
       catch {
-        const response = await fetch('/asset-library/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
-        if (!response.ok) throw new Error('请先运行资产库目录里的“启动资产库.ps1”。首次安装后端入口将在下次正常启动 ComfyUI 时加载。');
-        await request('/bootstrap');
+        if (opening.signal.aborted) return;
+        const deadline = setTimeout(() => opening.abort(), 24000);
+        try {
+          const response = await fetch('/asset-library/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}', signal: opening.signal });
+          if (!response.ok) {
+            const details = await response.json().catch(() => ({}));
+            throw new Error(details.error || '请先运行资产库目录里的“启动资产库.ps1”。首次安装后端入口将在下次正常启动 ComfyUI 时加载。');
+          }
+        } finally { clearTimeout(deadline); }
+        await request('/bootstrap', undefined, 'GET', { signal: opening.signal, timeout: 3000 });
       }
       if (current !== epoch || !overlay) return;
       frame = document.createElement('iframe'); frame.title = '姿绘库';
@@ -226,7 +241,7 @@ async function open() {
       const dismiss = document.createElement('button'); dismiss.textContent = '关闭'; dismiss.onclick = close;
       loading.append(document.createElement('br'), dismiss);
     }
-  })().finally(() => { if (pendingOpen === launch) pendingOpen = null; });
+  })().finally(() => { if (pendingOpen === launch) pendingOpen = null; if (openingController === opening) openingController = null; });
   pendingOpen = launch; return launch;
 }
 
@@ -406,7 +421,7 @@ export function install() {
       send('notice', { message: '已加入画布' });
     }).catch(error => { if (overlay) { overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto'; } send('notice', { message: error.message, error: true }); });
   }, { capture: true, signal: controller.signal });
-  window.__bbaigcAssetLibrary = { version: '1.2.4', open, close, addAsset, importNodes, watchJobs, session: EXTERNAL_SESSION,
+  window.__bbaigcAssetLibrary = { version: '1.2.5', open, close, addAsset, importNodes, watchJobs, session: EXTERNAL_SESSION,
     dispose() { close(); clearTimeout(jobTimer); document.getElementById('openposegen-optimization-status')?.remove(); sidebarObserver.disconnect(); controller.abort(); for (const request of requests) request.abort(); style.remove();
       for (const [prototype, { previous, wrapper }] of patchedMenus) if (prototype.getExtraMenuOptions === wrapper) prototype.getExtraMenuOptions = previous;
       patchedMenus.clear(); manager.unregisterSidebarTab?.('bbaigc-asset-library'); } };

@@ -2,13 +2,13 @@
   "id": "openposegen",
   "name": "OpenPoseGen",
   "display_name": "姿绘库",
-  "version": "1.2.4",
-  "tag": "v1.2.4",
+  "version": "1.2.5",
+  "tag": "v1.2.5",
   "author": "BBAIGC",
   "repository": "https://github.com/BBAIGC/OpenPoseGen",
-  "release_url": "https://github.com/BBAIGC/OpenPoseGen/releases/tag/v1.2.4",
+  "release_url": "https://github.com/BBAIGC/OpenPoseGen/releases/tag/v1.2.5",
   "manifest_url": "https://github.com/BBAIGC/OpenPoseGen/releases/latest/download/release.json",
-  "download_url": "https://github.com/BBAIGC/OpenPoseGen/releases/download/v1.2.4/OpenPoseGen-v1.2.4.zip",
+  "download_url": "https://github.com/BBAIGC/OpenPoseGen/releases/download/v1.2.5/OpenPoseGen-v1.2.5.zip",
   "sha256": null,
   "asset_download_url": "https://pan.baidu.com/s/1_Ah1Zu3Cc_VUpPkCRfc1tg?pwd=8wny",
   "node_versions": {
@@ -16,7 +16,9 @@
     "bbapi": "1.1.5"
   },
   "notes": [
-    "补充百度网盘素材包下载入口与提取码。",
-    "校正素材原作者署名，链接至姿态、服装与人像作者的 X 账号。"
+    "修复资源清理后资产库入口可能残留失效面板、再次点击无响应的问题。",
+    "关闭加载中的资产库会取消打开请求，重新打开可立即重试；启动失败显示真实原因。",
+    "移除旧发布包中的开发机路径默认值，按环境变量、本机配置与安装目录定位。",
+    "沿用已验证的共享核心1.2.25与BBAPI1.1.5快照，素材、配置和密钥均不包含在发布包中。"
   ]
 }
