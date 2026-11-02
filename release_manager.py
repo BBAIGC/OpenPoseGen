@@ -40,12 +40,12 @@ class ReleaseManager:
                 'repository': REPOSITORY, 'latest_version': latest.get('version', self.version),
                 'update_available': version_tuple(latest.get('version')) > version_tuple(self.version),
                 'release_url': latest.get('release_url', REPOSITORY + '/releases'),
-                'asset_download_url': None,
+                'asset_download_url': 'https://pan.baidu.com/s/1_Ah1Zu3Cc_VUpPkCRfc1tg?pwd=8wny',
                 'contacts': [{'name': '微信交流', 'image': '/asset-library/api/public-assets/wechat-contact.png'},
                              {'name': '微信支持', 'image': '/asset-library/api/public-assets/wechat-support.jpg'},
                              {'name': '支付宝支持', 'image': '/asset-library/api/public-assets/alipay-support.jpg'}],
-                'sources': [{'name': 'RuiC-PoseAtlas · 素材原作者', 'url': 'https://github.com/HRuiCcc/RuiC-PoseAtlas'},
-                            {'name': 'Anhao · 中文资料整理', 'url': 'https://github.com/anhao/ai-pose-gallery-zh'}]}
+                'sources': [{'name': '姿态与服装 · ギア @giaaibusi', 'url': 'https://x.com/giaaibusi'},
+                            {'name': '人像 · あぎ @agi_aibusi', 'url': 'https://x.com/agi_aibusi'}]}
 
     async def check(self):
         if self.latest and time.monotonic() - self.checked_at < 300:

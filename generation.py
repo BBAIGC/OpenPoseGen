@@ -32,7 +32,7 @@ except ImportError:
     from job_store import ACTIVE, FINAL, JobStore, from_timestamp, infer_settings, new_job, now_iso, owned_prompt, public_job
 
 ROOT = Path(__file__).resolve().parent
-VERSION = "1.2.3"
+VERSION = "1.2.4"
 RATIOS = ("1:1", "1:2", "2:1", "9:16", "16:9", "3:4", "4:3", "3:2", "2:3", "5:4", "4:5", "21:9", "9:21")
 RESOLUTIONS = {"1K": 1024, "2K": 2048, "4K": 4096}
 TURBO_SIGMAS = "1.0, 0.978453, 0.95418, 0.926626, 0.89508, 0.845148, 0.704534, 0.414568, 0"

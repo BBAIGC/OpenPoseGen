@@ -4,10 +4,10 @@ OpenPoseGen「姿绘库」由BBAIGC实现。项目自己的软件按[MIT](LICENS
 
 ## 参考图库与中文信息
 
-- 原始项目：[HRuiCcc/RuiC-PoseAtlas](https://github.com/HRuiCcc/RuiC-PoseAtlas)，原站[姿态图鉴](https://hruiccc.github.io/RuiC-PoseAtlas/)。原作者提供姿态与服装整理以及人像索引。本项目保留来源链接，不把整理工具的MIT误称为整套图片的再分发许可。
-- 人像原始图站：[AI Portrait Gallery](https://ai-portrait-gallery.pages.dev/)。其图片来源许可及站点对再转载的请求应分别核对。
-- 中文名称与补充元数据：[anhao/ai-pose-gallery-zh](https://github.com/anhao/ai-pose-gallery-zh)，站点[AI姿势图库](https://ai-pose-gallery.anhao.app/)。它是中文改版，不是RuiC原作者站点。
-- 原图ZIP和本地导入清单不在本代码仓库再分发。用户可从原作者页面获取素材后使用导入工具。下游使用与传播须核对各图片来源许可。
+- 姿态与服装原作者：[ギア（@giaaibusi）](https://x.com/giaaibusi)，原站为 [POSE-DB-01](https://ai-pose-gallery.pages.dev/) 与 [COSTUME-DB-01](https://ai-costume-gallery.pages.dev/)。
+- 人像原作者：[あぎ（@agi_aibusi）](https://x.com/agi_aibusi)，原站为 [AI Portrait Gallery](https://ai-portrait-gallery.pages.dev/)。
+- RuiC-PoseAtlas 为 HRuiCcc 的第三方整理版，并非图片原作者；中文名称与补充元数据来自 anhao 的中文整理版。代码许可不等于图片许可，图片使用以各原站条款为准。
+- 本代码仓库不包含原图 ZIP、参考原图或本地导入清单。素材包入口见 [README](README.md#素材包下载)。
 
 ## 运行代码
 

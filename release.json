@@ -2,22 +2,21 @@
   "id": "openposegen",
   "name": "OpenPoseGen",
   "display_name": "姿绘库",
-  "version": "1.2.1",
-  "tag": "v1.2.1",
+  "version": "1.2.4",
+  "tag": "v1.2.4",
   "author": "BBAIGC",
   "repository": "https://github.com/BBAIGC/OpenPoseGen",
-  "release_url": "https://github.com/BBAIGC/OpenPoseGen/releases/tag/v1.2.1",
+  "release_url": "https://github.com/BBAIGC/OpenPoseGen/releases/tag/v1.2.4",
   "manifest_url": "https://github.com/BBAIGC/OpenPoseGen/releases/latest/download/release.json",
-  "download_url": "https://github.com/BBAIGC/OpenPoseGen/releases/download/v1.2.1/OpenPoseGen-v1.2.1.zip",
+  "download_url": "https://github.com/BBAIGC/OpenPoseGen/releases/download/v1.2.4/OpenPoseGen-v1.2.4.zip",
   "sha256": null,
-  "asset_download_url": null,
+  "asset_download_url": "https://pan.baidu.com/s/1_Ah1Zu3Cc_VUpPkCRfc1tg?pwd=8wny",
   "node_versions": {
     "core": "1.2.25",
     "bbapi": "1.1.5"
   },
   "notes": [
-    "半幅可调整工作区，分类、搭配和会话外接参考。",
-    "普通千问25步、Turbo8步、MOSS及密钥实际开放的BBAPI图像模型。",
-    "真实任务队列、原始参考、多LoRA、实时语音与结果恢复。"
+    "补充百度网盘素材包下载入口与提取码。",
+    "校正素材原作者署名，链接至姿态、服装与人像作者的 X 账号。"
   ]
 }

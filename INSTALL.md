@@ -40,7 +40,7 @@
 
 ## 参考素材
 
-从[原作者页面](https://github.com/HRuiCcc/RuiC-PoseAtlas#readme)获取原图ZIP后，可使用本机导入工具按ID校验并迁入独立素材目录：姿态1,439张、形象1,499张、服装1,407张。
+从[素材包下载页](https://pan.baidu.com/s/1_Ah1Zu3Cc_VUpPkCRfc1tg?pwd=8wny)获取原图ZIP后，可使用本机导入工具按ID校验并迁入独立素材目录：姿态1,439张、形象1,499张、服装1,407张。
 
 公开源导入：
 

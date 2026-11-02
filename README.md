@@ -2,7 +2,7 @@
 
 # OpenPoseGen · 姿绘库
 
-![版本](https://img.shields.io/badge/版本-v1.2.3-d8b94b?style=flat-square)
+![版本](https://img.shields.io/badge/版本-v1.2.4-d8b94b?style=flat-square)
 ![ComfyUI](https://img.shields.io/badge/ComfyUI-参考搭配-222222?style=flat-square)
 ![本地与API](https://img.shields.io/badge/生成-本地%20%2F%20BBAPI-438867?style=flat-square)
 
@@ -14,9 +14,9 @@
 
 ## 素材包下载
 
-模型权重与参考图库需单独准备。可使用外接模式导入自己的图片，也可通过[原作者页面](https://github.com/HRuiCcc/RuiC-PoseAtlas#readme)或仓库的公开来源导入工具准备 RuiC 素材。
+参考图库：[百度网盘下载](https://pan.baidu.com/s/1_Ah1Zu3Cc_VUpPkCRfc1tg?pwd=8wny)，提取码 **8wny**。模型权重按[模型清单](MODELS.md)单独准备，也可在外接模式导入自己的图片。
 
-参考图库来自 [HRuiCcc/RuiC-PoseAtlas](https://github.com/HRuiCcc/RuiC-PoseAtlas)，共 **4,345 项**：形象1,499、服装1,407、姿态1,439。原作者与图片来源的许可分别适用，详情见 [开源与素材声明](THIRD_PARTY_NOTICES.md)。
+共 **4,345 项**：形象1,499、服装1,407、姿态1,439。姿态与服装原作者：[ギア @giaaibusi](https://x.com/giaaibusi)；人像原作者：[あぎ @agi_aibusi](https://x.com/agi_aibusi)。素材来源与适用许可见[开源与素材声明](THIRD_PARTY_NOTICES.md)。
 
 ## 三种方式使用
 
@@ -71,7 +71,7 @@
 
 默认部署普通千问2.1、Turbo8步、MOSS与实时语音；先计算所缺文件和磁盘空间，只下载 install/models.json 指定且本机没有的文件。完整路线约49.1GB权重，另预留约8GB素材及缓存，模型共用编码器和VAE不重复下载。如果空间或硬件不能运行默认组合，说明实际缺口后只就必要方案问我一次。模型需要登录、验证码或接受许可时由我操作，其他步骤继续自动完成。
 
-安装发布包内共享运行节点、GGUF依赖、Python依赖与工作流，按精确版本准备模型，写入本机 runtime.json。从原作者页面获取素材并校验导入，或使用公开来源导入工具；下载完成前可先用外接模式。BBAPI可配置但不用我的密钥提交付费测试，不读取或上传其他软件凭据。
+安装发布包内共享运行节点、GGUF依赖、Python依赖与工作流，按精确版本准备模型，写入本机 runtime.json。从 README 的素材包链接准备素材并校验导入；下载完成前可先用外接模式。BBAPI可配置但不用我的密钥提交付费测试，不读取或上传其他软件凭据。
 
 完成无付费、无GPU推理的加载检查：入口、三种模式、模型枚举、LoRA列表、实时语音依赖和所有原图路径应可用。需要重新启动ComfyUI才能载入新节点时明确告诉我；不要擅自结束正在运行的生成任务。报告安装位置、版本、已就绪路线和真实缺失项，不把静态检查写成生图质量已验收。
 ```
