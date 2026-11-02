@@ -1,6 +1,6 @@
 [project]
 name = "bbaigc-asset-library"
-version = "1.2.1"
+version = "1.2.2"
 description = "ComfyUI local reference asset library"
 requires-python = ">=3.11"
 dependencies = ["aiohttp>=3.10", "Pillow>=10"]

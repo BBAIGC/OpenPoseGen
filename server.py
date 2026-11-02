@@ -21,7 +21,7 @@ from catalog_store import CatalogStore, atomic_json
 from external_store import ExternalStore
 from runtime_paths import discover
 
-VERSION = '1.2.1'
+VERSION = '1.2.2'
 ROOT = Path(__file__).resolve().parent
 RUNTIME = discover()
 COMFY = RUNTIME['comfy_url']
